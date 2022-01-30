@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
-from accounts.migrations.models.choices import GenderChoices, LargeCategoryAddressChoices, MediumCategoryAddressChoices
+from accounts.models.choices import GenderChoices, LargeCategoryAddressChoices, MediumCategoryAddressChoices
 
 
 class User(AbstractUser):
