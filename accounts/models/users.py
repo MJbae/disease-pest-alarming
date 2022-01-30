@@ -14,8 +14,8 @@ class User(AbstractUser):
         validators=[RegexValidator(r"^010-?[1-9]\d{3}-?\d{4}$")],
     )
 
-    large_category_address = models.CharField(max_length=10, blank=True, choices=LargeCategoryAddressChoices.choices)
-    medium_category_address = models.CharField(max_length=10, blank=True, choices=MediumCategoryAddressChoices.choices)
+    large_category_address = models.CharField(max_length=15, blank=True, choices=LargeCategoryAddressChoices.choices)
+    medium_category_address = models.CharField(max_length=15, blank=True, choices=MediumCategoryAddressChoices.choices)
 
     def get_full_name(self):
         return f"{self.last_name} {self.first_name}".strip()
