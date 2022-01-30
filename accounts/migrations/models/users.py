@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
-from accounts.migrations.models.choices import GenderChoices
+from accounts.migrations.models.choices import GenderChoices, LargeCategoryAddressChoices, MediumCategoryAddressChoices
 
 
 class User(AbstractUser):
@@ -14,8 +14,8 @@ class User(AbstractUser):
         validators=[RegexValidator(r"^010-?[1-9]\d{3}-?\d{4}$")],
     )
 
-    first_address = models.CharField()
-    last_address = models.CharField()
+    large_category_address = models.CharField(max_length=10, blank=True, choices=LargeCategoryAddressChoices.choices)
+    medium_category_address = models.CharField(max_length=10, blank=True, choices=MediumCategoryAddressChoices.choices)
 
     def get_full_name(self):
         return f"{self.last_name} {self.first_name}".strip()
