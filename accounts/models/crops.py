@@ -10,6 +10,9 @@ class Crop(models.Model):
         max_length=13,
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         ordering = ["-id"]
 
@@ -22,6 +25,9 @@ class ProducingCrop(models.Model):
         Crop, related_name="producing_crop_set", on_delete=models.CASCADE
     )
     is_in_house = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.farm.name}'s {self.crop.name}"
 
     class Meta:
         ordering = ["-id"]
