@@ -2,12 +2,10 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
-from accounts.models.choices import GenderChoices, LargeCategoryAddressChoices, MediumCategoryAddressChoices
+from accounts.models.choices import LargeCategoryAddressChoices, MediumCategoryAddressChoices
 
 
 class User(AbstractUser):
-    gender = models.CharField(max_length=1, blank=True, choices=GenderChoices.choices)
-
     phone_number = models.CharField(
         max_length=13,
         blank=True,
