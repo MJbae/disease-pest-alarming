@@ -16,6 +16,9 @@ class User(AbstractUser):
     def get_full_name(self):
         return f"{self.last_name} {self.first_name}".strip()
 
+    class Meta:
+        ordering = ["-id"]
+
 
 class Farm(models.Model):
     owner = models.ForeignKey(
@@ -27,3 +30,6 @@ class Farm(models.Model):
     )
     large_category_address = models.CharField(max_length=15, blank=True, choices=LargeCategoryAddressChoices.choices)
     medium_category_address = models.CharField(max_length=15, blank=True, choices=MediumCategoryAddressChoices.choices)
+
+    class Meta:
+        ordering = ["-id"]

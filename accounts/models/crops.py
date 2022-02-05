@@ -10,6 +10,9 @@ class Crop(models.Model):
         max_length=13,
     )
 
+    class Meta:
+        ordering = ["-id"]
+
 
 class ProducingCrop(models.Model):
     farm = models.ForeignKey(
@@ -19,3 +22,6 @@ class ProducingCrop(models.Model):
         Crop, related_name="producing_crop_set", on_delete=models.CASCADE
     )
     is_in_house = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-id"]
