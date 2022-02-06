@@ -1,5 +1,6 @@
 from django.db import models
-from users import Farm
+
+from accounts.models.users import Farm
 
 
 class Crop(models.Model):
@@ -15,6 +16,7 @@ class Crop(models.Model):
 
     class Meta:
         ordering = ["-id"]
+        db_table = 'crop'
 
 
 class ProducingCrop(models.Model):
@@ -31,3 +33,4 @@ class ProducingCrop(models.Model):
 
     class Meta:
         ordering = ["-id"]
+        db_table = 'producing_crop'
