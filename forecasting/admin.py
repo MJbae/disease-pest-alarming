@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models.crops import Crop, ProducingCrop
 from .models.farms import Farm
+from .models.forecasting import Forecasting
 
 
 @admin.register(Farm)
@@ -15,4 +16,9 @@ class CropAdmin(admin.ModelAdmin):
 
 @admin.register(ProducingCrop)
 class ProducingCropAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Forecasting)
+class ForecastingAdmin(admin.ModelAdmin):
     pass
