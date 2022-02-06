@@ -39,3 +39,4 @@ class Farm(models.Model):
 
     class Meta:
         ordering = ["-id"]
+        db_table = 'farm'
