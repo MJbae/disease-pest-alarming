@@ -1,7 +1,5 @@
 from django.db import models
 
-from accounts.models.users import Farm
-
 
 class Crop(models.Model):
     name = models.CharField(
