@@ -1,5 +1,7 @@
 from django.db import models
 
+from forcasting.models import Farm
+
 
 class Crop(models.Model):
     name = models.CharField(
