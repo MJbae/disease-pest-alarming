@@ -35,7 +35,7 @@ class Farm(models.Model):
     medium_category_address = models.CharField(max_length=15, blank=True, choices=MediumCategoryAddressChoices.choices)
 
     def __str__(self):
-        return f"{self.owner.name}'s {self.name}"
+        return f"{self.owner.__str__()}'s {self.name}"
 
     class Meta:
         ordering = ["-id"]
