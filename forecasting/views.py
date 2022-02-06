@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
 
-# Create your views here.
+from forecasting.models import Forecasting
+from forecasting.serializers import ForecastingSerializer
+
+
+class ForecastingViewSet(ModelViewSet):
+    queryset = Forecasting.objects.all()
+    serializer_class = ForecastingSerializer
