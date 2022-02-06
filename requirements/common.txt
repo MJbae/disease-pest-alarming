@@ -5,3 +5,4 @@ sqlparse==0.4.2
 djangorestframework
 django-filter
 djangorestframework-jwt
+requests
