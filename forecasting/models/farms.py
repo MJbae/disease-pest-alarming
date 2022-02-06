@@ -1,7 +1,7 @@
 from django.db import models
 
 from backend.settings.common import AUTH_USER_MODEL
-from forcasting.models.choices import LargeCategoryAddressChoices, MediumCategoryAddressChoices
+from forecasting.models.choices import LargeCategoryAddressChoices, MediumCategoryAddressChoices
 
 
 class Farm(models.Model):

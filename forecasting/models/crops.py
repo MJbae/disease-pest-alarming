@@ -1,6 +1,6 @@
 from django.db import models
 
-from forcasting.models import Farm
+from forecasting.models import Farm
 
 
 class Crop(models.Model):
