@@ -14,16 +14,7 @@ def refine_xml_from_forecasting_search():
     if api_key is None:
         raise
 
-    path_params = {
-        "apiKey": api_key,
-        "serviceCode": "SVC51",
-        "serviceType": "AA001:XML",
-        "searchExaminYear": 2021,
-    }
-    response = requests.get(url=url, params=path_params, headers=headers)
-
-    tree = elemTree.fromstring(response.content)
-    forecasting_list = tree.iter(tag="item")
+    forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     for idx, item in enumerate(forecasting_list):
         if idx > 5:
             break
@@ -79,6 +70,19 @@ def refine_xml_from_forecasting_search():
                 bulk_creating_list.append(forecasting)
 
     Forecasting.objects.bulk_create(bulk_creating_list)
+
+
+def _get_basic_forecasting_results(api_key, headers, url):
+    path_params = {
+        "apiKey": api_key,
+        "serviceCode": "SVC51",
+        "serviceType": "AA001:XML",
+        "searchExaminYear": 2021,
+    }
+    response = requests.get(url=url, params=path_params, headers=headers)
+    tree = elemTree.fromstring(response.content)
+    forecasting_list = tree.iter(tag="item")
+    return forecasting_list
 
 
 def _convert_text_to_data_structure(text):
