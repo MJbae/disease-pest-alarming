@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Forecasting(models.Model):
+    date = models.DateField(blank=True)
     sigungu_code = models.CharField(max_length=16, blank=True)
     sigungu_name = models.CharField(max_length=16, blank=True)
     crop_name = models.CharField(max_length=16, blank=True)
