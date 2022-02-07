@@ -6,7 +6,7 @@ from forecasting.models import Forecasting
 
 
 def refine_xml_from_forecasting_search():
-    api_key, bulk_creating_list, headers, url = _get_required_variables()
+    api_key, bulk_creating_list, headers, url = _get_request_variables()
 
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     for idx, item in enumerate(forecasting_list):
@@ -34,16 +34,19 @@ def _get_crop_variables(item):
     detail_key = item.find('insectKey').text
     crop_name = item.find('kncrNm').text
     crop_code = item.find('kncrCode').text
+
     return crop_code, crop_name, detail_key
 
 
-def _get_required_variables():
+def _get_request_variables():
     bulk_creating_list = []
     url = "http://ncpms.rda.go.kr/npmsAPI/service"
     headers = {"Content-Type": "application/xml"}
     api_key = Setting.objects.get(key="apiKey").value
+
     if api_key is None:
         raise
+
     return api_key, bulk_creating_list, headers, url
 
 
@@ -58,6 +61,7 @@ def _append_instance_in_list(bulk_creating_list, crop_code, crop_name, item):
         crop_code=crop_code,
         target=target,
     )
+
     bulk_creating_list.append(forecasting)
 
 
@@ -74,6 +78,7 @@ def _get_sigungu_forecasting_results(api_key, detail_key, headers, item, url):
     sigungu_tree = elemTree.fromstring(sigungu_response.content)
     sigungu_text_list = sigungu_tree.find('list').text
     sigungu_forecasting_list = _convert_text_to_data_structure(sigungu_text_list)
+
     return sigungu_forecasting_list
 
 
@@ -88,6 +93,7 @@ def _get_sido_forecasting_results(api_key, detail_key, headers, url):
     sido_tree = elemTree.fromstring(sido_response.content)
     sido_text_list = sido_tree.find('list').text
     sido_forecasting_list = _convert_text_to_data_structure(sido_text_list)
+
     return sido_forecasting_list
 
 
@@ -101,6 +107,7 @@ def _get_basic_forecasting_results(api_key, headers, url):
     response = requests.get(url=url, params=path_params, headers=headers)
     tree = elemTree.fromstring(response.content)
     forecasting_list = tree.iter(tag="item")
+
     return forecasting_list
 
 
@@ -111,6 +118,7 @@ def _convert_text_to_data_structure(text):
     value_idx_end = 0
     result = []
     temp_dict = {}
+
     for idx, char in enumerate(text):
         if char == "{":
             key_idx_start = idx + 1
