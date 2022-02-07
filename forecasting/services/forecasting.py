@@ -23,16 +23,7 @@ def refine_xml_from_forecasting_search():
         crop_name = item.find('kncrNm').text
         crop_code = item.find('kncrCode').text
 
-        sido_path_params = {
-            "apiKey": api_key,
-            "serviceCode": "SVC52",
-            "serviceType": "AA001:XML",
-            "insectKey": detail_key,
-        }
-        sido_response = requests.get(url=url, params=sido_path_params, headers=headers)
-        sido_tree = elemTree.fromstring(sido_response.content)
-        sido_text_list = sido_tree.find('list').text
-        sido_forecasting_list = _convert_text_to_data_structure(sido_text_list)
+        sido_forecasting_list = _get_sido_forecasting_results(api_key, detail_key, headers, url)
 
         for item in sido_forecasting_list:
             if item.get("inqireValue") == "0":
@@ -70,6 +61,20 @@ def refine_xml_from_forecasting_search():
                 bulk_creating_list.append(forecasting)
 
     Forecasting.objects.bulk_create(bulk_creating_list)
+
+
+def _get_sido_forecasting_results(api_key, detail_key, headers, url):
+    sido_path_params = {
+        "apiKey": api_key,
+        "serviceCode": "SVC52",
+        "serviceType": "AA001:XML",
+        "insectKey": detail_key,
+    }
+    sido_response = requests.get(url=url, params=sido_path_params, headers=headers)
+    sido_tree = elemTree.fromstring(sido_response.content)
+    sido_text_list = sido_tree.find('list').text
+    sido_forecasting_list = _convert_text_to_data_structure(sido_text_list)
+    return sido_forecasting_list
 
 
 def _get_basic_forecasting_results(api_key, headers, url):
