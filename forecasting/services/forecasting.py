@@ -1,3 +1,5 @@
+from datetime import date
+
 import requests
 import xml.etree.ElementTree as elemTree
 
@@ -6,7 +8,8 @@ from forecasting.models import Forecasting
 
 
 def refine_xml_from_forecasting_search():
-    api_key, bulk_creating_list, headers, url = _get_request_variables()
+    bulk_creating_list = []
+    api_key, headers, url = _get_request_variables()
 
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     for idx, item in enumerate(forecasting_list):
@@ -39,7 +42,6 @@ def _get_crop_variables(item):
 
 
 def _get_request_variables():
-    bulk_creating_list = []
     url = "http://ncpms.rda.go.kr/npmsAPI/service"
     headers = {"Content-Type": "application/xml"}
     api_key = Setting.objects.get(key="apiKey").value
@@ -47,7 +49,7 @@ def _get_request_variables():
     if api_key is None:
         raise
 
-    return api_key, bulk_creating_list, headers, url
+    return api_key, headers, url
 
 
 def _append_instance_in_list(bulk_creating_list, crop_code, crop_name, item):
@@ -102,7 +104,7 @@ def _get_basic_forecasting_results(api_key, headers, url):
         "apiKey": api_key,
         "serviceCode": "SVC51",
         "serviceType": "AA001:XML",
-        "searchExaminYear": 2021,
+        "searchExaminYear": date.today().year,
     }
     response = requests.get(url=url, params=path_params, headers=headers)
     tree = elemTree.fromstring(response.content)
