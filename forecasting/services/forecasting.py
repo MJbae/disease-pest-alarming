@@ -6,31 +6,21 @@ from forecasting.models import Forecasting
 
 
 def refine_xml_from_forecasting_search():
-    bulk_creating_list = []
-    url = "http://ncpms.rda.go.kr/npmsAPI/service"
-    headers = {"Content-Type": "application/xml"}
-
-    api_key = Setting.objects.get(key="apiKey").value
-    if api_key is None:
-        raise
+    api_key, bulk_creating_list, headers, url = _get_required_variables()
 
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     for idx, item in enumerate(forecasting_list):
         if idx > 5:
             break
 
-        detail_key = item.find('insectKey').text
-        crop_name = item.find('kncrNm').text
-        crop_code = item.find('kncrCode').text
+        crop_code, crop_name, detail_key = _get_crop_variables(item)
 
         sido_forecasting_list = _get_sido_forecasting_results(api_key, detail_key, headers, url)
-
         for item in sido_forecasting_list:
             if item.get("inqireValue") == "0":
                 continue
 
             sigungu_forecasting_list = _get_sigungu_forecasting_results(api_key, detail_key, headers, item, url)
-
             for item in sigungu_forecasting_list:
                 if item.get("inqireValue") == "0":
                     continue
@@ -38,6 +28,23 @@ def refine_xml_from_forecasting_search():
                 _append_instance_in_list(bulk_creating_list, crop_code, crop_name, item)
 
     Forecasting.objects.bulk_create(bulk_creating_list)
+
+
+def _get_crop_variables(item):
+    detail_key = item.find('insectKey').text
+    crop_name = item.find('kncrNm').text
+    crop_code = item.find('kncrCode').text
+    return crop_code, crop_name, detail_key
+
+
+def _get_required_variables():
+    bulk_creating_list = []
+    url = "http://ncpms.rda.go.kr/npmsAPI/service"
+    headers = {"Content-Type": "application/xml"}
+    api_key = Setting.objects.get(key="apiKey").value
+    if api_key is None:
+        raise
+    return api_key, bulk_creating_list, headers, url
 
 
 def _append_instance_in_list(bulk_creating_list, crop_code, crop_name, item):
