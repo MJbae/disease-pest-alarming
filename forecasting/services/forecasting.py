@@ -35,21 +35,23 @@ def refine_xml_from_forecasting_search():
                 if item.get("inqireValue") == "0":
                     continue
 
-                target = item.get("dbyhsNm")
-
-                idx = target.find("(")
-                target = target[:idx]
-
-                forecasting = Forecasting(
-                    sigungu_name=item.get("sigunguNm"),
-                    sigungu_code=item.get("sigunguCode"),
-                    crop_name=crop_name,
-                    crop_code=crop_code,
-                    target=target,
-                )
-                bulk_creating_list.append(forecasting)
+                _append_instance_in_list(bulk_creating_list, crop_code, crop_name, item)
 
     Forecasting.objects.bulk_create(bulk_creating_list)
+
+
+def _append_instance_in_list(bulk_creating_list, crop_code, crop_name, item):
+    target = item.get("dbyhsNm")
+    idx = target.find("(")
+    target = target[:idx]
+    forecasting = Forecasting(
+        sigungu_name=item.get("sigunguNm"),
+        sigungu_code=item.get("sigunguCode"),
+        crop_name=crop_name,
+        crop_code=crop_code,
+        target=target,
+    )
+    bulk_creating_list.append(forecasting)
 
 
 def _get_sigungu_forecasting_results(api_key, detail_key, headers, item, url):
