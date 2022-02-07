@@ -7,7 +7,7 @@ from rest_framework.exceptions import ParseError
 
 from forecasting.models import Forecasting
 from forecasting.serializers import ForecastingSerializer
-from forecasting.services.forecasting import refine_xml_from_forecasting_search
+from forecasting.services.forecasting import catch_latest_forecasting
 
 
 class ForecastingViewSet(ModelViewSet):
@@ -18,7 +18,7 @@ class ForecastingViewSet(ModelViewSet):
 @api_view(["GET"])
 def update_forecasting(request):
     try:
-        refine_xml_from_forecasting_search()
+        catch_latest_forecasting()
     except Exception:  # TODO: 구체적인 Exception으로 변경할 것
         raise ParseError(detail="fail to update forecasting")
 
