@@ -28,19 +28,8 @@ def refine_xml_from_forecasting_search():
         for item in sido_forecasting_list:
             if item.get("inqireValue") == "0":
                 continue
-            sido_code = item.get("sidoCode")
-            sigungu_path_params = {
-                "apiKey": api_key,
-                "serviceCode": "SVC53",
-                "serviceType": "AA001:XML",
-                "insectKey": detail_key,
-                "sidoCode": sido_code
-            }
-            sigungu_response = requests.get(url=url, params=sigungu_path_params, headers=headers)
 
-            sigungu_tree = elemTree.fromstring(sigungu_response.content)
-            sigungu_text_list = sigungu_tree.find('list').text
-            sigungu_forecasting_list = _convert_text_to_data_structure(sigungu_text_list)
+            sigungu_forecasting_list = _get_sigungu_forecasting_results(api_key, detail_key, headers, item, url)
 
             for item in sigungu_forecasting_list:
                 if item.get("inqireValue") == "0":
@@ -61,6 +50,22 @@ def refine_xml_from_forecasting_search():
                 bulk_creating_list.append(forecasting)
 
     Forecasting.objects.bulk_create(bulk_creating_list)
+
+
+def _get_sigungu_forecasting_results(api_key, detail_key, headers, item, url):
+    sido_code = item.get("sidoCode")
+    sigungu_path_params = {
+        "apiKey": api_key,
+        "serviceCode": "SVC53",
+        "serviceType": "AA001:XML",
+        "insectKey": detail_key,
+        "sidoCode": sido_code
+    }
+    sigungu_response = requests.get(url=url, params=sigungu_path_params, headers=headers)
+    sigungu_tree = elemTree.fromstring(sigungu_response.content)
+    sigungu_text_list = sigungu_tree.find('list').text
+    sigungu_forecasting_list = _convert_text_to_data_structure(sigungu_text_list)
+    return sigungu_forecasting_list
 
 
 def _get_sido_forecasting_results(api_key, detail_key, headers, url):
