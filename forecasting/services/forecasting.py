@@ -22,9 +22,16 @@ def catch_latest_forecasting():
         return None
 
     # 최신 업데이트 내용을 DB에 반영
+    _save_latest_forecasting(api_key, headers, latest_date_in_api, url)
+
+    # TODO: 최신 업데이트 일자(latest_date_in_api)를 기준으로 회원에게 문자 전송
+
+
+def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
     bulk_creating_list = []
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     latest_date_text = latest_date_in_api.strftime('%Y%m%d')
+
     for item in forecasting_list:
 
         if latest_date_text != item.find('inputStdrDatetm').text:
@@ -45,8 +52,6 @@ def catch_latest_forecasting():
                 _append_instance_in_list(forecasting_date, bulk_creating_list, crop_code, crop_name, item)
 
     Forecasting.objects.bulk_create(bulk_creating_list)
-
-    # TODO: 최신 업데이트 일자(latest_date_in_api)를 기준으로 회원에게 문자 전송
 
 
 def _get_date_of_latest_forecasting(forecasting_list):
