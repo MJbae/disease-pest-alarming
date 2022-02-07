@@ -6,4 +6,12 @@ from forecasting.models import Forecasting
 class ForecastingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Forecasting
-        fields = "__all__"
+        fields = (
+            "id",
+            "date",
+            "sigungu_code",
+            "sigungu_name",
+            "crop_name",
+            "crop_code",
+            "target",
+        )
