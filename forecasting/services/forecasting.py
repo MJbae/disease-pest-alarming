@@ -32,10 +32,12 @@ def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     latest_date_text = latest_date_in_api.strftime('%Y%m%d')
 
-    for item in forecasting_list:
+    for idx, item in enumerate(forecasting_list): # TODO: 테스트 편리를 위해 enumerate로 idx 추가
 
-        if latest_date_text != item.find('inputStdrDatetm').text:
-            continue
+        if idx > 3: # TODO: 테스트 편리를 위해 idx > 5 조건 추가
+            break
+        # if latest_date_text != item.find('inputStdrDatetm').text: # TODO: 테스트 종료 후, 최신날짜의 예찰정보만 취급하도록 주석 제거
+        #     continue
 
         forecasting_date, crop_code, crop_name, detail_key = _get_forecasting_variables(item)
 
@@ -45,11 +47,22 @@ def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
                 continue
 
             sigungu_forecasting_list = _get_sigungu_forecasting_results(api_key, detail_key, headers, item, url)
+            pre_target = "&^%"
             for item in sigungu_forecasting_list:
+                target = item.get("dbyhsNm")
+
                 if item.get("inqireValue") == "0":
                     continue
+                print(f'11 pre_target: {pre_target}, target: {target}')
+                if pre_target in target:
+                    continue
 
-                _append_instance_in_list(forecasting_date, bulk_creating_list, crop_code, crop_name, item)
+                idx = target.find("(")
+                target = target[:idx]
+                pre_target = target
+
+                print(f'22 pre_target: {pre_target}, target: {target}')
+                _append_instance_in_list(forecasting_date, bulk_creating_list, crop_code, crop_name, item, target)
 
     Forecasting.objects.bulk_create(bulk_creating_list)
 
@@ -96,10 +109,7 @@ def _get_request_variables():
     return api_key, headers, url
 
 
-def _append_instance_in_list(date, bulk_creating_list, crop_code, crop_name, item):
-    target = item.get("dbyhsNm")
-    idx = target.find("(")
-    target = target[:idx]
+def _append_instance_in_list(date, bulk_creating_list, crop_code, crop_name, item, target):
     forecasting = Forecasting(
         date=datetime.strptime(date, '%Y%m%d').date(),
         sigungu_name=item.get("sigunguNm"),
