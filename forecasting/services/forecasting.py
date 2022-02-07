@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import requests
 import xml.etree.ElementTree as elemTree
@@ -7,16 +7,30 @@ from accounts.models import Setting
 from forecasting.models import Forecasting
 
 
-def refine_xml_from_forecasting_search():
-    bulk_creating_list = []
+def catch_latest_forecasting():
+    # 올해 예찰정보 리스트 조회
     api_key, headers, url = _get_request_variables()
-
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
-    for idx, item in enumerate(forecasting_list):
-        if idx > 5:
-            break
+    latest_date_in_api = _get_date_of_latest_forecasting(forecasting_list)
 
-        crop_code, crop_name, detail_key = _get_crop_variables(item)
+    # 예찰 정보가 없을 시 메소드 종료
+    if latest_date_in_api is None:
+        return None
+
+    # 최신 업데이트 내용이 없을 시 메소드 종료
+    if not _is_latest_data(latest_date_in_api):
+        return None
+
+    # 최신 업데이트 내용을 DB에 반영
+    bulk_creating_list = []
+    forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
+    latest_date_text = latest_date_in_api.strftime('%Y%m%d')
+    for item in forecasting_list:
+
+        if latest_date_text != item.find('inputStdrDatetm').text:
+            continue
+
+        forecasting_date, crop_code, crop_name, detail_key = _get_forecasting_variables(item)
 
         sido_forecasting_list = _get_sido_forecasting_results(api_key, detail_key, headers, url)
         for item in sido_forecasting_list:
@@ -28,17 +42,42 @@ def refine_xml_from_forecasting_search():
                 if item.get("inqireValue") == "0":
                     continue
 
-                _append_instance_in_list(bulk_creating_list, crop_code, crop_name, item)
+                _append_instance_in_list(forecasting_date, bulk_creating_list, crop_code, crop_name, item)
 
     Forecasting.objects.bulk_create(bulk_creating_list)
 
+    # TODO: 최신 업데이트 일자(latest_date_in_api)를 기준으로 회원에게 문자 전송
 
-def _get_crop_variables(item):
+
+def _get_date_of_latest_forecasting(forecasting_list):
+    max_date = None
+    for item in forecasting_list:
+        date_in_text = item.find('inputStdrDatetm').text
+        date = datetime.strptime(date_in_text, '%Y%m%d').date()
+        if max_date is None:
+            max_date = date
+        if date > max_date:
+            max_date = date
+
+    return max_date
+
+
+def _is_latest_data(date_in_api):
+    # forecasting record 내 조사 날짜 컬럼 추가
+    # 기존 DB 내 최신 forecasting 날짜와 api 호출에 따른 forecasting의 날짜를 비교해서 최선여부 확인할 것
+    latest_forecasting = Forecasting.objects.latest("date")
+    date_in_db = latest_forecasting.date
+
+    return True if date_in_api > date_in_db else False
+
+
+def _get_forecasting_variables(item):
+    forecasting_date = item.find('inputStdrDatetm').text
     detail_key = item.find('insectKey').text
     crop_name = item.find('kncrNm').text
     crop_code = item.find('kncrCode').text
 
-    return crop_code, crop_name, detail_key
+    return forecasting_date, crop_code, crop_name, detail_key
 
 
 def _get_request_variables():
@@ -52,11 +91,12 @@ def _get_request_variables():
     return api_key, headers, url
 
 
-def _append_instance_in_list(bulk_creating_list, crop_code, crop_name, item):
+def _append_instance_in_list(date, bulk_creating_list, crop_code, crop_name, item):
     target = item.get("dbyhsNm")
     idx = target.find("(")
     target = target[:idx]
     forecasting = Forecasting(
+        date=datetime.strptime(date, '%Y%m%d').date(),
         sigungu_name=item.get("sigunguNm"),
         sigungu_code=item.get("sigunguCode"),
         crop_name=crop_name,
@@ -104,7 +144,7 @@ def _get_basic_forecasting_results(api_key, headers, url):
         "apiKey": api_key,
         "serviceCode": "SVC51",
         "serviceType": "AA001:XML",
-        "searchExaminYear": date.today().year,
+        "searchExaminYear": date.today().year - 1, # TODO: 테스트 편의를 위해 -1 적용
     }
     response = requests.get(url=url, params=path_params, headers=headers)
     tree = elemTree.fromstring(response.content)
