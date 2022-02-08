@@ -34,15 +34,22 @@ def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
 
     for idx, item in enumerate(forecasting_list): # TODO: 테스트 편리를 위해 enumerate로 idx 추가
 
-        if idx > 3: # TODO: 테스트 편리를 위해 idx > 5 조건 추가
+        if idx > 2: # TODO: 테스트 편리를 위해 idx > 5 조건 추가
             break
         # if latest_date_text != item.find('inputStdrDatetm').text: # TODO: 테스트 종료 후, 최신날짜의 예찰정보만 취급하도록 주석 제거
         #     continue
 
         forecasting_date, crop_code, crop_name, detail_key = _get_forecasting_variables(item)
-
         sido_forecasting_list = _get_sido_forecasting_results(api_key, detail_key, headers, url)
+        pre_sido = "&^%"
         for item in sido_forecasting_list:
+            sido = item.get("sidoNm")
+
+            if pre_sido == sido:
+                continue
+
+            pre_sido = sido
+
             if item.get("inqireValue") == "0":
                 continue
 
@@ -53,7 +60,6 @@ def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
 
                 if item.get("inqireValue") == "0":
                     continue
-                print(f'11 pre_target: {pre_target}, target: {target}')
                 if pre_target in target:
                     continue
 
@@ -61,9 +67,7 @@ def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
                 target = target[:idx]
                 pre_target = target
 
-                print(f'22 pre_target: {pre_target}, target: {target}')
                 _append_instance_in_list(forecasting_date, bulk_creating_list, crop_code, crop_name, item, target)
-
     Forecasting.objects.bulk_create(bulk_creating_list)
 
 
