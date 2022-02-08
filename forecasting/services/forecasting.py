@@ -44,7 +44,6 @@ def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
         pre_sido = "&^%"
         for item in sido_forecasting_list:
             sido = item.get("sidoNm")
-
             if pre_sido == sido:
                 continue
 
@@ -57,15 +56,15 @@ def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
             pre_target = "&^%"
             for item in sigungu_forecasting_list:
                 target = item.get("dbyhsNm")
-
-                if item.get("inqireValue") == "0":
-                    continue
                 if pre_target in target:
                     continue
 
                 idx = target.find("(")
                 target = target[:idx]
                 pre_target = target
+
+                if item.get("inqireValue") == "0":
+                    continue
 
                 _append_instance_in_list(forecasting_date, bulk_creating_list, crop_code, crop_name, item, target)
     Forecasting.objects.bulk_create(bulk_creating_list)
