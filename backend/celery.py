@@ -10,3 +10,11 @@ app = Celery("backend")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 app.autodiscover_tasks()
+
+app.conf.beat_schedule = {
+    "catch_latest_forecasting": {
+        "task": "forecasting.tasks.c_catch_latest_forecasting",
+        "schedule": crontab(minute='*/15'),
+        "args": (),
+    },
+}
