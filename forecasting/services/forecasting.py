@@ -1,9 +1,8 @@
-from datetime import date, datetime
-
+import os
 import requests
-import xml.etree.ElementTree as elemTree
 
-from accounts.models import Setting
+import xml.etree.ElementTree as elemTree
+from datetime import date, datetime
 from forecasting.models import Forecasting
 
 
@@ -104,8 +103,7 @@ def _get_forecasting_variables(item):
 def _get_request_variables():
     url = "http://ncpms.rda.go.kr/npmsAPI/service"
     headers = {"Content-Type": "application/xml"}
-    api_key = Setting.objects.get(key="apiKey").value
-
+    api_key = os.environ.get("PUBLIC_API_KEY")
     if api_key is None:
         raise
 
