@@ -1,12 +1,8 @@
 from django.contrib import admin
-from .models import User, Setting
+from .models import User
 
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     pass
 
-
-@admin.register(Setting)
-class SettingAdmin(admin.ModelAdmin):
-    pass
