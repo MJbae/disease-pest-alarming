@@ -5,7 +5,7 @@ import xml.etree.ElementTree as elemTree
 from datetime import date, datetime
 
 from accounts.models import User
-from forecasting.models import Forecasting
+from forecasting.models import Forecasting, Farm, ProducingCrop
 
 
 def catch_latest_forecasting():
@@ -25,8 +25,29 @@ def catch_latest_forecasting():
     # 최신 예찰정보 조회
     latest_forecasting_list = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
 
+    # 연관 회원에게 예찰정보 전송
+    owners = User.objects.filter(is_staff=False)
+    for owner in owners:
+        farms = Farm.objects.filter(owner=owner)
+        for farm in farms:
+            producing_crops = ProducingCrop.objects.filter(farm=farm)
+            for producing_crop in producing_crops:
+                for forecasting in latest_forecasting_list:
+                    sigungu_name = farm.medium_category_address
+                    crop_name = producing_crop.crop.name
+                    if forecasting.crop_name == crop_name and forecasting.sigungu_name == sigungu_name:
+                        owner_number = owner.phone_number
+                        forecasting_massage = forecasting.__str__()
+                        _send_sms(owner_number, forecasting_massage)
+
     # 최신 업데이트 내용을 DB에 반영
-    Forecasting.objects.bulk_create(latest_forecasting_list)
+    # Forecasting.objects.bulk_create(latest_forecasting_list) #
+
+
+def _send_sms(to_number, content):
+    print(f'to: {to_number}')
+    print(f'content: {content}')
+    print(f'')
 
 
 def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
