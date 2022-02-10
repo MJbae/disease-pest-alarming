@@ -4,18 +4,18 @@ from forecasting.models import Farm
 
 
 class Crop(models.Model):
-    name = models.CharField(
-        max_length=13,
-    )
     code = models.CharField(
-        max_length=13,
+        max_length=8, primary_key=True
+    )
+    name = models.CharField(
+        max_length=16,
     )
 
     def __str__(self):
         return self.name
 
     class Meta:
-        ordering = ["-id"]
+        ordering = ["-code"]
         db_table = 'crop'
 
 
@@ -29,7 +29,7 @@ class ProducingCrop(models.Model):
     is_in_house = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.farm.name}'s {self.crop.name}"
+        return f"{self.farm.__str__()} {self.crop.name}"
 
     class Meta:
         ordering = ["-id"]
