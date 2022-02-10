@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+asgiref = "==3.5.0"
+pytz = "==2021.3"
+sqlparse = "==0.4.2"
+djangorestframework = "*"
+django-filter = "*"
+djangorestframework-jwt = "*"
+requests = "*"
+gunicorn = "*"
+Django = "==3.1.14"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
