@@ -1,5 +1,9 @@
 import os
 import requests
+import time
+import base64
+import hmac
+import hashlib
 
 import xml.etree.ElementTree as elemTree
 from datetime import date, datetime
@@ -44,10 +48,51 @@ def catch_latest_forecasting():
     # Forecasting.objects.bulk_create(latest_forecasting_list) #
 
 
+def _make_signature(access_key, secret_key, method, uri, timestamp):
+    secret_key = bytes(secret_key, 'UTF-8')
+
+    message = method + " " + uri + "\n" + timestamp + "\n" + access_key
+    message = bytes(message, 'UTF-8')
+    result = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
+    return result
+
+
 def _send_sms(to_number, content):
     print(f'to: {to_number}')
     print(f'content: {content}')
     print(f'')
+
+    base_url = os.environ.get("SENS_URL")
+    access_key = os.environ.get("SENS_ACCESS_KEY")
+    secret_key = os.environ.get("SENS_SECRET_KEY")
+    from_number = os.environ.get("SENS_FROM_NUMBER")
+    uri = f"{base_url}/services/{access_key}/messages"
+    timestamp = str(int(time.time() * 1000))
+
+    body = {
+        "type": "sms",
+        "from": from_number,
+        "content": content,
+        "messages": [
+            {
+                "to": to_number,
+                "subject": "병해충 예찰 서비스",
+                "content": content
+            }
+        ]
+    }
+
+    signature = _make_signature(access_key, secret_key, 'POST', uri, timestamp)
+    headers = {
+        'Content-Type': 'application/json; charset=utf-8',
+        'x-ncp-apigw-timestamp': timestamp,
+        'x-ncp-iam-access-key': access_key,
+        'x-ncp-apigw-signature-v2': signature
+    }
+
+    res = requests.post(uri, json=body, headers=headers)
+    print(res.json())
+    return res.json()
 
 
 def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
