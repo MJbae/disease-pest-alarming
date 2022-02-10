@@ -11,3 +11,4 @@ class MediumCategoryAddressChoices(models.TextChoices):
     SUWON = "수원시", "수원시"
     SEONGNAM = "성남시", "성남시"
     ANYANG = "안양시", "안양시"
+    GAPYEONG = "가평군", "가평군"
