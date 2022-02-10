@@ -3,6 +3,8 @@ import requests
 
 import xml.etree.ElementTree as elemTree
 from datetime import date, datetime
+
+from accounts.models import User
 from forecasting.models import Forecasting
 
 
@@ -20,20 +22,21 @@ def catch_latest_forecasting():
     if not _is_latest_data(latest_date_in_api):
         return None
 
+    # 최신 예찰정보 조회
+    latest_forecasting_list = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
+
     # 최신 업데이트 내용을 DB에 반영
-    _save_latest_forecasting(api_key, headers, latest_date_in_api, url)
-
-    # TODO: 최신 업데이트 일자(latest_date_in_api)를 기준으로 회원에게 문자 전송
+    Forecasting.objects.bulk_create(latest_forecasting_list)
 
 
-def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
-    bulk_creating_list = []
+def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
+    refined_forecasting_list = []
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     latest_date_text = latest_date_in_api.strftime('%Y%m%d')
 
-    for idx, item in enumerate(forecasting_list): # TODO: 테스트 편리를 위해 enumerate로 idx 추가
+    for idx, item in enumerate(forecasting_list):  # TODO: 테스트 편리를 위해 enumerate로 idx 추가
 
-        if idx > 2: # TODO: 테스트 편리를 위해 idx > 5 조건 추가
+        if idx > 2:  # TODO: 테스트 편리를 위해 idx > 5 조건 추가
             break
         # if latest_date_text != item.find('inputStdrDatetm').text: # TODO: 테스트 종료 후, 최신날짜의 예찰정보만 취급하도록 주석 제거
         #     continue
@@ -65,8 +68,8 @@ def _save_latest_forecasting(api_key, headers, latest_date_in_api, url):
                 if item.get("inqireValue") == "0":
                     continue
 
-                _append_instance_in_list(forecasting_date, bulk_creating_list, crop_code, crop_name, item, target)
-    Forecasting.objects.bulk_create(bulk_creating_list)
+                _append_instance_in_list(forecasting_date, refined_forecasting_list, crop_code, crop_name, item, target)
+    return refined_forecasting_list
 
 
 def _get_date_of_latest_forecasting(forecasting_list):
@@ -160,7 +163,7 @@ def _get_basic_forecasting_results(api_key, headers, url):
         "apiKey": api_key,
         "serviceCode": "SVC51",
         "serviceType": "AA001:XML",
-        "searchExaminYear": date.today().year - 1, # TODO: 테스트 편의를 위해 -1 적용
+        "searchExaminYear": date.today().year - 1,  # TODO: 테스트 편의를 위해 -1 적용
     }
     response = requests.get(url=url, params=path_params, headers=headers)
     tree = elemTree.fromstring(response.content)
