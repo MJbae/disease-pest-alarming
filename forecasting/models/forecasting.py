@@ -10,7 +10,7 @@ class Forecasting(models.Model):
     target = models.CharField(max_length=16, blank=True)
 
     def __str__(self):
-        return f"'{self.crop_name} in {self.sigungu_name} damaged by {self.target}"
+        return f"{self.crop_name} in {self.sigungu_name} damaged by {self.target}"
 
     class Meta:
         ordering = ["-id"]
