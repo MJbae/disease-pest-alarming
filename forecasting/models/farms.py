@@ -13,7 +13,7 @@ class Farm(models.Model):
     medium_category_address = models.CharField(max_length=15, blank=True, choices=MediumCategoryAddressChoices.choices)
 
     def __str__(self):
-        return f"{self.owner.__str__()}농장"
+        return f"{self.medium_category_address}의 {self.owner.__str__()}농장"
 
     class Meta:
         ordering = ["-id"]
