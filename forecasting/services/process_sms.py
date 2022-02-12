@@ -11,6 +11,14 @@ from forecasting.models import Farm, ProducingCrop
 
 
 def send_forecasting_to_owners(latest_forecasting_list):
+    """
+    Send the latest forecasting according to the farm owner's address and producing corp
+
+    Parameters:
+    latest_forecasting_list(list): list of Forecasting model instances
+
+    Returns: None
+    """
     owners = User.objects.filter(is_staff=False)
     for owner in owners:
         farms = Farm.objects.filter(owner=owner)
