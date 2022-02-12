@@ -7,7 +7,7 @@ from rest_framework.exceptions import ParseError
 
 from forecasting.models import Forecasting
 from forecasting.serializers import ForecastingSerializer
-from forecasting.services.forecasting import catch_latest_forecasting
+from forecasting.services.process_forecasting import catch_latest_forecasting
 
 
 class ForecastingViewSet(ModelViewSet):

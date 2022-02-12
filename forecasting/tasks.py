@@ -1,6 +1,6 @@
 from celery import shared_task
 
-from forecasting.services.forecasting import catch_latest_forecasting
+from forecasting.services.process_forecasting import catch_latest_forecasting
 
 
 @shared_task
