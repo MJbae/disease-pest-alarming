@@ -30,6 +30,13 @@ def catch_latest_forecasting():
     latest_forecasting_list = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
 
     # 연관 회원에게 예찰정보 전송
+    _send_forecasting_to_owners(latest_forecasting_list)
+
+    # 최신 업데이트 내용을 DB에 반영
+    # Forecasting.objects.bulk_create(latest_forecasting_list) #
+
+
+def _send_forecasting_to_owners(latest_forecasting_list):
     owners = User.objects.filter(is_staff=False)
     for owner in owners:
         farms = Farm.objects.filter(owner=owner)
@@ -43,9 +50,6 @@ def catch_latest_forecasting():
                         owner_number = owner.phone_number
                         forecasting_massage = forecasting.__str__()
                         _send_sms(owner_number, forecasting_massage)
-
-    # 최신 업데이트 내용을 DB에 반영
-    # Forecasting.objects.bulk_create(latest_forecasting_list) #
 
 
 def _make_signature(access_key, secret_key, method, uri, timestamp):
