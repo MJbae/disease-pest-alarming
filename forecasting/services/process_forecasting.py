@@ -6,7 +6,7 @@ from datetime import date, datetime
 
 from forecasting.models import Forecasting
 from forecasting.services.process_sms import send_forecasting_to_owners
-from forecasting.services.utils import _convert_text_to_data_structure
+from forecasting.services.utils import convert_text_to_data_structure
 
 
 def process_latest_forecasting():
@@ -142,7 +142,7 @@ def _get_sigungu_forecasting_results(api_key, detail_key, headers, item, url):
     sigungu_response = requests.get(url=url, params=sigungu_path_params, headers=headers)
     sigungu_tree = elemTree.fromstring(sigungu_response.content)
     sigungu_text_list = sigungu_tree.find('list').text
-    sigungu_forecasting_list = _convert_text_to_data_structure(sigungu_text_list)
+    sigungu_forecasting_list = convert_text_to_data_structure(sigungu_text_list)
 
     return sigungu_forecasting_list
 
@@ -157,7 +157,7 @@ def _get_sido_forecasting_results(api_key, detail_key, headers, url):
     sido_response = requests.get(url=url, params=sido_path_params, headers=headers)
     sido_tree = elemTree.fromstring(sido_response.content)
     sido_text_list = sido_tree.find('list').text
-    sido_forecasting_list = _convert_text_to_data_structure(sido_text_list)
+    sido_forecasting_list = convert_text_to_data_structure(sido_text_list)
 
     return sido_forecasting_list
 

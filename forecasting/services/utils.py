@@ -1,4 +1,4 @@
-def _convert_text_to_data_structure(text):
+def convert_text_to_data_structure(text):
     """
     Convert text to python data structure
 
