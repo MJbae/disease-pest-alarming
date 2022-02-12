@@ -11,11 +11,10 @@ from forecasting.services.utils import _convert_text_to_data_structure
 
 def process_latest_forecasting():
     """
-    - Check as if the latest forecasting is updated in *RCPMS
-    - Send the latest forecasting to farm owners
-    - Save the latest forecasting in DB
+    Check the latest forecasting, Send the one with SMS and Save in DB
 
-    * RCPMS: National Crop Pest Management System
+    Parameters: None
+    Returns: None
     """
     api_key, headers, url = _get_request_variables()
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
