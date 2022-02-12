@@ -5,11 +5,13 @@ import os
 import time
 
 import requests
+from django.db import transaction
 
 from accounts.models import User
 from forecasting.models import Farm, ProducingCrop
 
 
+@transaction.atomic
 def send_forecasting_to_owners(latest_forecasting_list):
     """
     Send the latest forecasting according to the farm owner's address and producing corp
@@ -19,19 +21,20 @@ def send_forecasting_to_owners(latest_forecasting_list):
 
     Returns: None
     """
-    owners = User.objects.filter(is_staff=False)
-    for owner in owners:
-        farms = Farm.objects.filter(owner=owner)
-        for farm in farms:
-            producing_crops = ProducingCrop.objects.filter(farm=farm)
-            for producing_crop in producing_crops:
-                for forecasting in latest_forecasting_list:
-                    sigungu_name = farm.medium_category_address
-                    crop_name = producing_crop.crop.name
-                    if forecasting.crop_name == crop_name and forecasting.sigungu_name == sigungu_name:
-                        owner_number = owner.phone_number
-                        forecasting_massage = forecasting.__str__()
-                        _send_sms(owner_number, forecasting_massage)
+    with transaction.atomic():
+        owners = User.objects.filter(is_staff=False) # TODO: 왈러스 연산자 사용해서 리팩토링 시도
+        for owner in owners:
+            farms = Farm.objects.filter(owner=owner)
+            for farm in farms:
+                producing_crops = ProducingCrop.objects.filter(farm=farm)
+                for producing_crop in producing_crops:
+                    for forecasting in latest_forecasting_list:
+                        sigungu_name = farm.medium_category_address
+                        crop_name = producing_crop.crop.name
+                        if forecasting.crop_name == crop_name and forecasting.sigungu_name == sigungu_name:
+                            owner_number = owner.phone_number
+                            forecasting_massage = forecasting.__str__()
+                            _send_sms(owner_number, forecasting_massage)
 
 
 def _make_signature(access_key, secret_key, method, uri, timestamp):
