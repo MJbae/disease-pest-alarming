@@ -1,15 +1,11 @@
 import os
 import requests
-import time
-import base64
-import hmac
-import hashlib
 
 import xml.etree.ElementTree as elemTree
 from datetime import date, datetime
 
-from accounts.models import User
-from forecasting.models import Forecasting, Farm, ProducingCrop
+from forecasting.models import Forecasting
+from forecasting.services.process_sms import send_forecasting_to_owners
 
 
 def catch_latest_forecasting():
@@ -30,70 +26,10 @@ def catch_latest_forecasting():
     latest_forecasting_list = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
 
     # 연관 회원에게 예찰정보 전송
-    _send_forecasting_to_owners(latest_forecasting_list)
+    send_forecasting_to_owners(latest_forecasting_list)
 
     # 최신 업데이트 내용을 DB에 반영
     # Forecasting.objects.bulk_create(latest_forecasting_list) #
-
-
-def _send_forecasting_to_owners(latest_forecasting_list):
-    owners = User.objects.filter(is_staff=False)
-    for owner in owners:
-        farms = Farm.objects.filter(owner=owner)
-        for farm in farms:
-            producing_crops = ProducingCrop.objects.filter(farm=farm)
-            for producing_crop in producing_crops:
-                for forecasting in latest_forecasting_list:
-                    sigungu_name = farm.medium_category_address
-                    crop_name = producing_crop.crop.name
-                    if forecasting.crop_name == crop_name and forecasting.sigungu_name == sigungu_name:
-                        owner_number = owner.phone_number
-                        forecasting_massage = forecasting.__str__()
-                        _send_sms(owner_number, forecasting_massage)
-
-
-def _make_signature(access_key, secret_key, method, uri, timestamp):
-    secret_key = bytes(secret_key, 'UTF-8')
-
-    message = method + " " + uri + "\n" + timestamp + "\n" + access_key
-    message = bytes(message, 'UTF-8')
-    result = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
-    return result
-
-
-def _send_sms(to_number, content):
-    base_url = os.environ.get("SENS_URL")
-    access_key = os.environ.get("SENS_ACCESS_KEY")
-    secret_key = os.environ.get("SENS_SECRET_KEY")
-    service_id = os.environ.get("SENS_SERVICE_ID")
-    from_number = os.environ.get("SENS_FROM_NUMBER")
-    uri = f"/sms/v2/services/{service_id}/messages"
-    full_uri = base_url + uri
-    timestamp = str(int(time.time() * 1000))
-
-    body = {
-        "type": "sms",
-        "from": from_number,
-        "content": content,
-        "messages": [
-            {
-                "to": to_number,
-                "subject": "병해충 예찰 서비스",
-                "content": content
-            }
-        ]
-    }
-
-    signature = _make_signature(access_key, secret_key, 'POST', uri, timestamp)
-    headers = {
-        'Content-Type': 'application/json; charset=utf-8',
-        'x-ncp-apigw-timestamp': timestamp,
-        'x-ncp-iam-access-key': access_key,
-        'x-ncp-apigw-signature-v2': signature
-    }
-
-    res = requests.post(full_uri, json=body, headers=headers)
-    return res.json()
 
 
 def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
