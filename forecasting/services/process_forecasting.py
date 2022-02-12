@@ -9,7 +9,7 @@ from forecasting.services.process_sms import send_forecasting_to_owners
 from forecasting.services.utils import _convert_text_to_data_structure
 
 
-def catch_latest_forecasting():
+def process_latest_forecasting():
     """
     - Check as if the latest forecasting is updated in *RCPMS
     - Send the latest forecasting to farm owners
