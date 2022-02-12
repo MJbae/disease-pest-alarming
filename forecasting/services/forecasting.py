@@ -58,15 +58,13 @@ def _make_signature(access_key, secret_key, method, uri, timestamp):
 
 
 def _send_sms(to_number, content):
-    print(f'to: {to_number}')
-    print(f'content: {content}')
-    print(f'')
-
     base_url = os.environ.get("SENS_URL")
     access_key = os.environ.get("SENS_ACCESS_KEY")
     secret_key = os.environ.get("SENS_SECRET_KEY")
+    service_id = os.environ.get("SENS_SERVICE_ID")
     from_number = os.environ.get("SENS_FROM_NUMBER")
-    uri = f"{base_url}/services/{access_key}/messages"
+    uri = f"/sms/v2/services/{service_id}/messages"
+    full_uri = base_url + uri
     timestamp = str(int(time.time() * 1000))
 
     body = {
@@ -90,8 +88,7 @@ def _send_sms(to_number, content):
         'x-ncp-apigw-signature-v2': signature
     }
 
-    res = requests.post(uri, json=body, headers=headers)
-    print(res.json())
+    res = requests.post(full_uri, json=body, headers=headers)
     return res.json()
 
 
