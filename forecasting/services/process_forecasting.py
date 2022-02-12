@@ -2,6 +2,7 @@ import os
 import requests
 from datetime import date, datetime
 
+from django.db import transaction
 import xml.etree.ElementTree as elemTree
 
 from forecasting.models import Forecasting
@@ -9,6 +10,7 @@ from forecasting.services.process_sms import send_forecasting_to_owners
 from forecasting.services.utils import convert_text_to_data_structure
 
 
+@transaction.atomic
 def process_latest_forecasting():
     """
     Check the latest forecasting, Send the one with SMS and Save in DB
@@ -26,11 +28,10 @@ def process_latest_forecasting():
     if not _is_latest_data(latest_date_in_api):
         return None
 
-    latest_forecasting_list = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
-
-    send_forecasting_to_owners(latest_forecasting_list)
-
-    # Forecasting.objects.bulk_create(latest_forecasting_list) # TODO: 테스트 편리를 위한 주석추가
+    with transaction.atomic():
+        latest_forecasting_list = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
+        send_forecasting_to_owners(latest_forecasting_list)
+        # Forecasting.objects.bulk_create(latest_forecasting_list) # TODO: 테스트 편리를 위한 주석추가
 
 
 def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
@@ -174,5 +175,3 @@ def _get_basic_forecasting_results(api_key, headers, url):
     forecasting_list = tree.iter(tag="item")
 
     return forecasting_list
-
-
