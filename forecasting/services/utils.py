@@ -1,4 +1,14 @@
 def _convert_text_to_data_structure(text):
+    """
+    Convert text to python data structure
+
+    Parameters:
+    text(str): text from OPEN API response
+
+    Returns:
+    result(list): list of dictionary elements
+    """
+
     key_idx_start = 0
     key_idx_end = 0
     value_idx_start = 0
