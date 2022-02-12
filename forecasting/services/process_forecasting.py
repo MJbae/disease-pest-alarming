@@ -1,8 +1,8 @@
 import os
 import requests
+from datetime import date, datetime
 
 import xml.etree.ElementTree as elemTree
-from datetime import date, datetime
 
 from forecasting.models import Forecasting
 from forecasting.services.process_sms import send_forecasting_to_owners
