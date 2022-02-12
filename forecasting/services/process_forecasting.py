@@ -17,27 +17,21 @@ def catch_latest_forecasting():
 
     * RCPMS: National Crop Pest Management System
     """
-    # 올해 예찰정보 리스트 조회
     api_key, headers, url = _get_request_variables()
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     latest_date_in_api = _get_date_of_latest_forecasting(forecasting_list)
 
-    # 예찰 정보가 없을 시 메소드 종료
     if latest_date_in_api is None:
         return None
 
-    # 최신 업데이트 내용이 없을 시 메소드 종료
     if not _is_latest_data(latest_date_in_api):
         return None
 
-    # 최신 예찰정보 조회
     latest_forecasting_list = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
 
-    # 연관 회원에게 예찰정보 전송
     send_forecasting_to_owners(latest_forecasting_list)
 
-    # 최신 업데이트 내용을 DB에 반영
-    # Forecasting.objects.bulk_create(latest_forecasting_list) #
+    # Forecasting.objects.bulk_create(latest_forecasting_list) # TODO: 테스트 편리를 위한 주석추가
 
 
 def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
