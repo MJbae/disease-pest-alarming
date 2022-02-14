@@ -26,9 +26,9 @@ class SignupView(CreateAPIView):
             farm["owner"] = user.id
             crops = farm.get("producing_crops")
 
-            result = FarmSerializer(data=farm)
-            result.is_valid()
-            farm_instance = result.save()
+            serialized_farm = FarmSerializer(data=farm)
+            serialized_farm.is_valid()
+            farm_instance = serialized_farm.save()
 
             for crop in crops:
                 crop_name = crop.get("name")
