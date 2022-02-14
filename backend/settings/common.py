@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -105,6 +106,17 @@ REST_FRAMEWORK = {
         "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
+}
+
+expiration_days = float(os.environ.get("JWT_EXPIRATION_DAYS"))
+refesh_expiration_days = float(os.environ.get("JWT_REFRESH_EXPIRATION_DAYS"))
+
+JWT_AUTH = {
+    "JWT_SECRET_KEY": SECRET_KEY,
+    "JWT_ALGORITHM": "HS256",
+    "JWT_ALLOW_REFRESH": True,
+    "JWT_EXPIRATION_DELTA": timedelta(days=expiration_days),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=refesh_expiration_days),
 }
 
 # AWS Setting
