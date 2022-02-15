@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.shortcuts import render
+
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView
 
@@ -33,3 +35,7 @@ class SignupView(CreateAPIView):
         raw_password = serializer.validated_data.get("password")
         hashed_password = make_password(raw_password)
         return hashed_password
+
+
+def index(request):
+    return render(request, 'index.html')
