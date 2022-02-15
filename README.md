@@ -3,8 +3,13 @@
 ### How to use
 1. Sign Up in Simple
    * [Here to Sign Up]()
-2. Get Forecasting SMS Alarm
-   * ex) TODO: image link
+2. Get SMS Forecasting Alarm
+
+   * SMS Example
+    ~~~text
+    [Web발신] 
+    2021-11-16, 가평군의 포도에서 갈색무늬병 피해 발생
+    ~~~
 
 ### Technologies Used
 * Application Framework
