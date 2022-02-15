@@ -8,37 +8,57 @@
     <body>
         <form method="POST" action="{% url 'signup'%}">
             {% csrf_token %}
+            <br>
             이름(User Name)
             <br>
             <input name="UserName" type="text">
+            <br>
             <br>
             비밀번호(Password)
             <br>
             <input name="Password" type="text">
             <br>
+            <br>
             비밀번호 확인(Confirm Password)
             <br>
             <input name="ConfirmPassword" type="text">
+            <br>
             <br>
             핸드폰번호(Phone Number)
             <br>
             <input name="PhoneNumber" type="text">
             <br>
-            농장주소 시도(Large Category Address)
             <br>
-            <input name="LargeCategoryAddress" type="text">
+            농장주소(Farm Address)
             <br>
-            농장주소 시군구(Medium Category Address)
+            <select name="LargeCategoryAddress">
+                <option value="">시도 선택</option>
+                <option value="경기도">경기도(GYEONGGI)</option>
+            </select>
+            <select name="MediumCategoryAddress">
+                <option value="">시군구 선택</option>
+                <option value="화성시">화성시(HWASEONG)</option>
+                <option value="가평군">가평군(GAPYEONG)</option>
+                <option value="수원시">수원시(SUWON)</option>
+                <option value="성남시">성남시(SEONGNAM)</option>
+                <option value="안양시">안양시(ANYANG)</option>
+            </select>
             <br>
-            <input name="MediumCategoryAddress" type="text">
             <br>
             작물명(Crop Name)
             <br>
-            <input name="CropName" type="text">
+            <select name="CropName">
+                <option value="">작물 선택</option>
+                <option value="포도">포도(grape)</option>
+                <option value="논벼">논벼(rice)</option>
+                <option value="배">배(pear)</option>
+                <option value="사과">사과(apple)</option>
+                <option value="고추">고추(pepper)</option>
+            </select>
             <br>
-
             <br>
-            <input class="btn btn-primary" type="submit" value="signup">
+            <br>
+            <input class="btn btn-primary" type="submit" value="제출(Submit)">
         </form>
     </body>
 </html>
