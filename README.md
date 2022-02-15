@@ -1,6 +1,10 @@
-# disease-pest-alarming
+## disease-pest-alarming
 > Disease and Pest Forecasting Service based on SMS Alarm
-* [Project in detail]()
+### How to use
+1. Sign Up in Simple
+   * [Here to Sign Up]()
+2. Get Forecasting SMS Alarm
+   * ex) TODO: image link
 
 ### Technologies Used
 * Application Framework
@@ -21,3 +25,6 @@
   * Microsoft Azure
 * Container
   * Docker
+### etc
+* [API Document]()
+* [Project in detail]()
