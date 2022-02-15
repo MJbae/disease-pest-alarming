@@ -20,7 +20,7 @@
   * MySQL
   * Django's ORM
 * Async Distributed Process
-  * Celery beat
+  * Celery, Celery Beat
   * AWS SQS
 * Test Framework
   * PyTest
