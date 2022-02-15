@@ -72,9 +72,12 @@ def signup(request):
 
             request_body['farms'] = farms
             url = f"{BASE_URL}/api/v1/accounts/signup/"
-            response = requests.post(url=url, json=request_body)
 
-            if response.status_code == 201:
+            try: # TODO: 추후에 비동기로 처리하거나 wsgi에서 callback에 따른 이슈 해결법 찾기
+                requests.post(url=url, json=request_body)
+            except Exception:
+                return redirect('index')
+            finally:
                 return redirect('index')
 
     return render(request, 'signup.html')
