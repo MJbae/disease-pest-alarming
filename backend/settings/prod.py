@@ -1,3 +1,6 @@
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 from .common import *
 
 DEBUG = os.environ.get("DEBUG") in ["1", "t", "true", "T", "True"]
@@ -18,3 +21,9 @@ DATABASES = {
         "NAME": os.getenv("DB_NAME"),
     },
 }
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN"),
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,
+    send_default_pii=True
+)
