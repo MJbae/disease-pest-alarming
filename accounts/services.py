@@ -13,8 +13,9 @@ def save_nested_models_in_new_user(farms, user_id):
         None
     """
     for farm in farms:
-        crops = _get_crops(farm, user_id)
+        farm["owner"] = user_id
         farm_instance = _save_farm_instance(farm)
+        crops = farm.get("producing_crops")
 
         for crop in crops:
             crop = _reformat_crop(crop, farm_instance.pk)
@@ -43,8 +44,3 @@ def _save_farm_instance(farm):
     farm_instance = serialized_farm.save()
     return farm_instance
 
-
-def _get_crops(farm, user_id):
-    farm["owner"] = user_id
-    crops = farm.get("producing_crops")
-    return crops
