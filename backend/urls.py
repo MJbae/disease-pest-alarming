@@ -19,9 +19,9 @@ from django.urls import path, include
 from accounts.views import index, signup
 
 urlpatterns = [
+    path("api/v1/forecasting/", include("forecasting.urls")),
+    path("api/v1/accounts/", include("accounts.urls")),
     path('admin/', admin.site.urls),
-    path("forecasting/", include("forecasting.urls")),
-    path("accounts/", include("accounts.urls")),
-    path('', index, name='index'),
     path('signup', signup, name='signup'),
+    path('', index, name='index'),
 ]

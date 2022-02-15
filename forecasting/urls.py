@@ -7,6 +7,6 @@ router = DefaultRouter()
 router.register("forecastings", views.ForecastingViewSet)
 
 urlpatterns = [
-    path("api/manual-update", update_forecasting, name="update_forecasting"),
-    path("api/", include(router.urls)),
+    path("manual-update/", update_forecasting, name="update_forecasting"),
+    path("", include(router.urls)),
 ]

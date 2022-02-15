@@ -71,7 +71,7 @@ def signup(request):
                 }
             ]
             request_body['farms'] = farms
-            url = "http://localhost:8000/accounts/signup/"
+            url = "http://localhost:8000/api/v1/accounts/signup/"
             response = requests.post(url=url, json=request_body)
 
             if response.status_code == 201:
