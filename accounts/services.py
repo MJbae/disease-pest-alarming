@@ -3,6 +3,15 @@ from forecasting.serializers import FarmSerializer, ProducingCropSerializer
 
 
 def save_nested_models_in_new_user(farms, user_id):
+    """
+    Save Farm and ProducingCrop Model instances according to User Model's id
+
+    Parameters:
+        farms(list): list with Farm model instance elements
+
+    Returns:
+        None
+    """
     for farm in farms:
         crops = _get_crops(farm, user_id)
         farm_instance = _save_farm_instance(farm)
