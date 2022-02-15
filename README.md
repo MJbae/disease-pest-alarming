@@ -3,7 +3,7 @@
 ### How to use
 1. Sign Up in Simple
    * [Here to Sign Up]()
-2. Get SMS Forecasting Alarm
+2. Get SMS Alarm When it occurs
 
    * SMS Example
     ~~~text
