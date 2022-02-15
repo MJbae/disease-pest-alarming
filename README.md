@@ -1,4 +1,4 @@
-## disease-pest-alarming
+## Disease & Pest Alarming 
 > Disease and Pest Forecasting Service based on SMS Alarm
 ### How to use
 1. Sign Up in Simple
