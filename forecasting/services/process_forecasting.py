@@ -15,8 +15,11 @@ def process_latest_forecasting():
     """
     Check the latest forecasting, Send the one with SMS and Save in DB
 
-    Parameters: None
-    Returns: None
+    Parameters:
+        None
+
+    Returns:
+        None
     """
     api_key, headers, url = _get_request_variables()
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
