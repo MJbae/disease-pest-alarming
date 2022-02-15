@@ -1,0 +1,44 @@
+<html lang="kr">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Sign Up</title>
+    </head>
+    <body>
+        <form method="POST" action="{% url 'signup'%}">
+            {% csrf_token %}
+            이름(User Name)
+            <br>
+            <input name="UserName" type="text">
+            <br>
+            비밀번호(Password)
+            <br>
+            <input name="Password" type="text">
+            <br>
+            비밀번호 확인(Confirm Password)
+            <br>
+            <input name="ConfirmPassword" type="text">
+            <br>
+            핸드폰번호(Phone Number)
+            <br>
+            <input name="PhoneNumber" type="text">
+            <br>
+            농장주소 시도(Large Category Address)
+            <br>
+            <input name="LargeCategoryAddress" type="text">
+            <br>
+            농장주소 시군구(Medium Category Address)
+            <br>
+            <input name="MediumCategoryAddress" type="text">
+            <br>
+            작물명(Crop Name)
+            <br>
+            <input name="CropName" type="text">
+            <br>
+
+            <br>
+            <input class="btn btn-primary" type="submit" value="signup">
+        </form>
+    </body>
+</html>
