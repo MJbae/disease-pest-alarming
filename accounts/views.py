@@ -1,5 +1,10 @@
+import os
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.shortcuts import render, redirect
+
+import requests
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView
 
@@ -33,3 +38,43 @@ class SignupView(CreateAPIView):
         raw_password = serializer.validated_data.get("password")
         hashed_password = make_password(raw_password)
         return hashed_password
+
+
+def index(request):
+    return render(request, 'index.html')
+
+
+def signup(request):
+    if request.method == 'POST':
+        request_body = {}
+        username = request.POST['UserName']
+        password = request.POST['Password']
+        confirm_password = request.POST['ConfirmPassword']
+        phone_number = request.POST['PhoneNumber']
+        large_category_address = request.POST['LargeCategoryAddress']
+        medium_category_address = request.POST['MediumCategoryAddress']
+        crop_name = request.POST['CropName']
+
+        if password == confirm_password:
+            request_body['username'] = username
+            request_body['password'] = password
+            request_body['phone_number'] = phone_number
+            farms = [
+                {
+                    "producing_crops": [
+                        {
+                            "name": crop_name
+                        }
+                    ],
+                    "large_category_address": large_category_address,
+                    "medium_category_address": medium_category_address
+                }
+            ]
+            request_body['farms'] = farms
+            url = "http://localhost:8000/accounts/signup/"
+            response = requests.post(url=url, json=request_body)
+
+            if response.status_code == 201:
+                return redirect('index')
+
+    return render(request, 'signup.html')
