@@ -32,4 +32,4 @@
   * Docker
 ### etc
 * [API Document]()
-* [Project in detail]()
+* [Project in detail](https://studynote.oopy.io/projects/6)
