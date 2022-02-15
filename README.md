@@ -4,11 +4,10 @@
 
 ### Technologies Used
 * Application Framework
-  * Django
-  * Django REST Framework
+  * Django, Django REST Framework
 * SMS API
   * SENS(by NAVER CLOUD PLATFORM)
-* RDB & ORM 
+* RDBMS & ORM 
   * MySQL
   * Django's ORM
 * Async Distributed Process
@@ -18,5 +17,7 @@
   * PyTest
   * Model Bakery
 ### Deployment Environment
-* Cloud Infra: Microsoft Azure
-* Container: Docker
+* Cloud Infra
+  * Microsoft Azure
+* Container
+  * Docker
