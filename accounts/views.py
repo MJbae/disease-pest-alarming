@@ -1,5 +1,3 @@
-import os
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
@@ -8,6 +6,7 @@ import requests
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView
 
+from backend.settings.common import BASE_URL
 from forecasting.models import Crop
 from forecasting.serializers import FarmSerializer, ProducingCropSerializer
 from .serializers import SignupSerializer
@@ -70,8 +69,9 @@ def signup(request):
                     "medium_category_address": medium_category_address
                 }
             ]
+
             request_body['farms'] = farms
-            url = "http://localhost:8000/api/v1/accounts/signup/"
+            url = f"{BASE_URL}/api/v1/accounts/signup/"
             response = requests.post(url=url, json=request_body)
 
             if response.status_code == 201:

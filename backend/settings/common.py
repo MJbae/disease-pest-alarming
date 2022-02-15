@@ -15,6 +15,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+BASE_URL = "http://localhost:8000" if DEBUG else os.environ.get("BASE_URL")
+
 # Application definition
 INSTALLED_APPS = [
     # django apps
