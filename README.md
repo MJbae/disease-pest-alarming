@@ -2,7 +2,7 @@
 > Disease and Pest Forecasting Service based on SMS Alarm
 ### How to use
 1. Sign Up in Simple
-   * [Here to Sign Up](https://disease-pest-alarming.azurewebsites.net/signup)
+   * [Here to Sign Up](https://disease-pest-alarming.azurewebsites.net/signup/)
 2. Get SMS Alarm When it occurs
 
    * SMS Example
@@ -30,6 +30,7 @@
   * Microsoft Azure
 * Container
   * Docker
-### etc
-* [API Document]()
-* [Project in detail](https://studynote.oopy.io/projects/6)
+### Documents
+* [Swagger - API Document](https://disease-pest-alarming.azurewebsites.net/swagger/)
+* [Redoc - API Document](https://disease-pest-alarming.azurewebsites.net/redoc/)
+* [Project in detail](https://studynote.oopy.io/projects/6/)
