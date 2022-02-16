@@ -9,5 +9,5 @@ requests
 python-dotenv==0.19.2
 celery[sqs]
 sentry-sdk
-pyyaml
 uritemplate
+drf_yasg
