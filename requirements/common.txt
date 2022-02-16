@@ -11,3 +11,6 @@ celery[sqs]
 sentry-sdk
 uritemplate
 drf_yasg
+pytest
+model_bakery
+pytest_django
