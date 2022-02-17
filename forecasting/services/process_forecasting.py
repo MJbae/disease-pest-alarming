@@ -43,9 +43,10 @@ def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
     latest_date_text = latest_date_in_api.strftime('%Y%m%d')
 
     for idx, item in enumerate(forecasting_list):  # TODO: 테스트 편리를 위해 enumerate로 idx 추가
-
-        if idx > 2:  # TODO: 테스트 편리를 위해 idx > 5 조건 추가
+        # 메모리 한계 상 idx > 60 조건이 최대치임(6개월치 예찰정보 처리량)
+        if idx > 3:  # TODO: 테스트 편리를 위해 idx > x 조건 추가
             break
+
         # if latest_date_text != item.find('inputStdrDatetm').text: # TODO: 테스트 종료 후, 최신날짜의 예찰정보만 취급하도록 주석 제거
         #     continue
 
