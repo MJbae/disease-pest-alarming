@@ -35,6 +35,11 @@ def send_forecasting_to_owners(latest_forecasting_list):
                         _send_sms(owner_number, forecasting_massage)
 
 
+def send_sms_to_new(username, phone_number):
+    message = f'{username}님 병해충예찰정보 문자서비스에 가입되었습니다.'
+    _send_sms(phone_number, message)
+
+
 def _make_signature(access_key, secret_key, method, uri, timestamp):
     secret_key = bytes(secret_key, 'UTF-8')
 

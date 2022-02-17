@@ -9,6 +9,7 @@ from rest_framework.generics import CreateAPIView
 from backend.settings.common import BASE_URL
 from forecasting.models import Crop
 from forecasting.serializers import FarmSerializer, ProducingCropSerializer
+from forecasting.services.process_sms import send_sms_to_new
 from .serializers import SignupSerializer
 from .services import save_nested_models_in_new_user
 
@@ -73,11 +74,15 @@ def signup(request):
             request_body['farms'] = farms
             url = f"{BASE_URL}/api/v1/accounts/signup/"
 
-            try: # TODO: 추후에 비동기로 처리하거나 wsgi에서 callback에 따른 이슈 해결법 찾기
+            if get_user_model().objects.filter(is_staff=False).count() > 100:
+                return redirect('index')
+
+            try:  # TODO: 추후에 비동기로 처리하거나 wsgi에서 callback에 따른 이슈 해결법 찾기
                 requests.post(url=url, json=request_body)
             except Exception:
                 return redirect('index')
             finally:
+                send_sms_to_new(username, phone_number)
                 return redirect('index')
 
     return render(request, 'signup.html')
