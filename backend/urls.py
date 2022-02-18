@@ -38,7 +38,7 @@ urlpatterns = [
     path("api/v1/forecasting/", include("forecasting.urls")),
     path("api/v1/accounts/", include("accounts.urls")),
     path('admin/', admin.site.urls),
-    path('signup', signup, name='signup'),
+    path('signup/', signup, name='signup'),
     path('swagger/', schema_view.with_ui(
         'swagger', cache_timeout=0
     ), name='schema-swagger-ui'),
