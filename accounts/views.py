@@ -9,9 +9,9 @@ from rest_framework.generics import CreateAPIView
 from backend.settings.common import BASE_URL
 from forecasting.models import Crop
 from forecasting.serializers import FarmSerializer, ProducingCropSerializer
-from forecasting.services.process_sms import send_sms_to_new
 from .serializers import SignupSerializer
 from .services import save_nested_models_in_new_user
+from .tasks import send_sms_to_new
 
 
 class SignupView(CreateAPIView):
@@ -82,7 +82,7 @@ def signup(request):
             except Exception:
                 return redirect('index')
             finally:
-                send_sms_to_new(username, phone_number)
+                send_sms_to_new.delay(username, phone_number)
                 return redirect('index')
 
     return render(request, 'signup.html')
