@@ -19,16 +19,19 @@ class ForecastingViewSet(ModelViewSet):
 
 @api_view(["GET"])
 def update_forecasting(request):
+    jwt = _get_jwt_from_header(request)
+    user_id = _get_user_id_from_jwt(jwt)
+
     try:
-        jwt = _get_jwt_from_header(request)
-        user_id = _get_user_id_from_jwt(jwt)
         user = get_user_model().objects.get(id=user_id)
 
         if user.is_staff is False:
             raise ParseError(detail="권한이 없는 사용자입니다.")
 
         process_latest_forecasting()
-    except Exception:  # TODO: 구체적인 Exception으로 변경할 것
+    except get_user_model().ObjectDoesNotExist:
+        raise ParseError(detail="알 수 없는 사용자입니다.")
+    except Exception:
         raise ParseError(detail="알 수 없는 원인으로 예찰정보 전송에 실패했습니다.")
     return Response(status=status.HTTP_200_OK)
 
@@ -41,5 +44,4 @@ def _get_jwt_from_header(request):
 
 def _get_user_id_from_jwt(jwt):
     payload = jwt_decode_handler(jwt)
-    user_id = payload.get('user_id')
-    return user_id
+    return payload.get('user_id')
