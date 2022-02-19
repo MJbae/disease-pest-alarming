@@ -32,24 +32,10 @@ def send_forecasting_to_owners(latest_forecasting_list):
                     if forecasting.crop_name == crop_name and forecasting.sigungu_name == sigungu_name:
                         owner_number = owner.phone_number
                         forecasting_massage = forecasting.__str__()
-                        _send_sms(owner_number, forecasting_massage)
+                        send_sms(owner_number, forecasting_massage)
 
 
-def send_sms_to_new(username, phone_number):
-    message = f'{username}님 병해충예찰정보 문자서비스에 가입되었습니다.'
-    _send_sms(phone_number, message)
-
-
-def _make_signature(access_key, secret_key, method, uri, timestamp):
-    secret_key = bytes(secret_key, 'UTF-8')
-
-    message = method + " " + uri + "\n" + timestamp + "\n" + access_key
-    message = bytes(message, 'UTF-8')
-    result = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
-    return result
-
-
-def _send_sms(to_number, content):
+def send_sms(to_number, content):
     base_url = os.environ.get("SENS_URL")
     access_key = os.environ.get("SENS_ACCESS_KEY")
     secret_key = os.environ.get("SENS_SECRET_KEY")
@@ -82,3 +68,12 @@ def _send_sms(to_number, content):
 
     res = requests.post(full_uri, json=body, headers=headers)
     return res.json()
+
+
+def _make_signature(access_key, secret_key, method, uri, timestamp):
+    secret_key = bytes(secret_key, 'UTF-8')
+
+    message = method + " " + uri + "\n" + timestamp + "\n" + access_key
+    message = bytes(message, 'UTF-8')
+    result = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
+    return result

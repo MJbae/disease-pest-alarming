@@ -9,7 +9,7 @@ from rest_framework.exceptions import ParseError
 from backend.settings.common import SECRET_KEY
 from forecasting.models import Forecasting
 from forecasting.serializers import ForecastingSerializer
-from forecasting.services.process_forecasting import process_latest_forecasting
+from forecasting.tasks import c_catch_latest_forecasting
 
 
 class ForecastingViewSet(ModelViewSet):
@@ -28,7 +28,7 @@ def update_forecasting(request):
         if user.is_staff is False:
             raise ParseError(detail="권한이 없는 사용자입니다.")
 
-        process_latest_forecasting()
+        c_catch_latest_forecasting.delay()
     except get_user_model().ObjectDoesNotExist:
         raise ParseError(detail="알 수 없는 사용자입니다.")
     except Exception:
