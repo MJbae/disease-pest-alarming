@@ -11,7 +11,7 @@ from forecasting.models import Crop
 from forecasting.serializers import FarmSerializer, ProducingCropSerializer
 from .serializers import SignupSerializer
 from .services import save_nested_models_in_new_user
-from .tasks import send_sms_to_new
+from .tasks import c_send_sms_to_new
 
 
 class SignupView(CreateAPIView):
@@ -82,7 +82,7 @@ def signup(request):
             except Exception:
                 return redirect('index')
             finally:
-                send_sms_to_new.delay(username, phone_number)
+                c_send_sms_to_new.delay(username, phone_number)
                 return redirect('index')
 
     return render(request, 'signup.html')
