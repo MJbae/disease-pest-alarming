@@ -18,24 +18,18 @@ def save_nested_models_in_new_user(farms, user_id):
         crops = farm.get("producing_crops")
 
         for crop in crops:
-            crop = _reformat_crop(crop, farm_instance.pk)
-            _save_crop_instance(crop)
+            crop_code = crop.get("code")
+            if crop_code:
+                _save_producing_crop_instance(crop_code, farm_instance.pk)
 
 
-def _save_crop_instance(crop):
-    serialized_crop = ProducingCropSerializer(data=crop)
+def _save_producing_crop_instance(crop_code, farm_id):
+    serialized_crop = ProducingCropSerializer(data={
+        "farm": farm_id,
+        "crop": crop_code
+    })
     serialized_crop.is_valid()
     serialized_crop.save()
-
-
-def _reformat_crop(crop, farm_pk):
-    crop_name = crop.get("name")
-    crop["farm"] = farm_pk
-    crop_code = Crop.objects.get(name=crop_name).code
-    crop["crop"] = crop_code
-    del (crop['name'])
-
-    return crop
 
 
 def _save_farm_instance(farm):
@@ -43,4 +37,3 @@ def _save_farm_instance(farm):
     serialized_farm.is_valid()
     farm_instance = serialized_farm.save()
     return farm_instance
-
