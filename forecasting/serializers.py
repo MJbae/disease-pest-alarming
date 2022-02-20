@@ -9,10 +9,8 @@ class ForecastingSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "date",
-            "sigungu_code",
-            "sigungu_name",
-            "crop_name",
-            "crop_code",
+            "medium_category_address",
+            "crop",
             "target",
         )
 
