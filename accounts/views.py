@@ -22,7 +22,9 @@ class SignupView(CreateAPIView):
     ]
 
     def perform_create(self, serializer):
-        hashed_password = self._make_hashed_password(serializer)
+        raw_password = serializer.validated_data.get("password")
+        hashed_password = make_password(raw_password)
+
         username = serializer.save(password=hashed_password)
         user_id = self._get_user_id(username)
         farms = self.request.data.get("farms")
@@ -31,13 +33,7 @@ class SignupView(CreateAPIView):
 
     def _get_user_id(self, username):
         user = get_user_model().objects.get(username=username)
-        user_id = user.id
-        return user_id
-
-    def _make_hashed_password(self, serializer):
-        raw_password = serializer.validated_data.get("password")
-        hashed_password = make_password(raw_password)
-        return hashed_password
+        return user.id
 
 
 def index(request):
