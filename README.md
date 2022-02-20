@@ -31,6 +31,5 @@
 * Container
   * Docker
 ### Documents
-* [Swagger - API Document](https://disease-pest-alarming.azurewebsites.net/swagger/)
-* [Redoc - API Document](https://disease-pest-alarming.azurewebsites.net/redoc/)
+* [API Document](https://disease-pest-alarming.azurewebsites.net/swagger/)
 * [Project in detail](https://studynote.oopy.io/projects/6/)
