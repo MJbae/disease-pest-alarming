@@ -15,6 +15,9 @@ from .tasks import c_send_sms_to_new
 
 
 class SignupView(CreateAPIView):
+    """
+    API View that receives a POST with a user info including farms and producing_crops
+    """
     model = get_user_model()
     serializer_class = SignupSerializer
     permission_classes = [

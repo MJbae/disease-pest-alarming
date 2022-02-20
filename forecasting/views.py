@@ -13,12 +13,18 @@ from forecasting.tasks import c_catch_latest_forecasting
 
 
 class ForecastingViewSet(ModelViewSet):
+    """
+        Temporary Using API ViewSet in order to test forecasting data
+    """
     queryset = Forecasting.objects.all()
     serializer_class = ForecastingSerializer
 
 
 @api_view(["GET"])
 def update_forecasting(request):
+    """
+        API View that immediately act on periodic work of catching the latest forecasting
+    """
     jwt = _get_jwt_from_header(request)
     user_id = _get_user_id_from_jwt(jwt)
 
