@@ -1,7 +1,17 @@
 from django.contrib import admin
 from .models.crops import Crop, ProducingCrop
-from .models.farms import Farm
+from .models.farms import Farm, LargeCategoryAddress, MediumCategoryAddress
 from .models.forecasting import Forecasting
+
+
+@admin.register(LargeCategoryAddress)
+class LargeCategoryAddressAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(MediumCategoryAddress)
+class MediumCategoryAddressAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Farm)
