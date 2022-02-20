@@ -4,9 +4,7 @@ from backend.settings.common import AUTH_USER_MODEL
 
 
 class LargeCategoryAddress(models.Model):
-    code = models.CharField(
-        max_length=8, primary_key=True
-    )
+    code = models.IntegerField(primary_key=True)
     name = models.CharField(
         max_length=16,
     )
@@ -20,9 +18,7 @@ class LargeCategoryAddress(models.Model):
 
 
 class MediumCategoryAddress(models.Model):
-    code = models.CharField(
-        max_length=8, primary_key=True
-    )
+    code = models.IntegerField(primary_key=True)
     name = models.CharField(
         max_length=16,
     )
