@@ -50,7 +50,7 @@ def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
         # if latest_date_text != item.find('inputStdrDatetm').text: # TODO: 테스트 종료 후, 최신날짜의 예찰정보만 취급하도록 주석 제거
         #     continue
 
-        forecasting_date, crop_code, crop_name, detail_key = _get_forecasting_variables(item)
+        forecasting_date, crop_code, detail_key = _get_forecasting_variables(item)
         sido_forecasting_list = _get_sido_forecasting_results(api_key, detail_key, headers, url)
         pre_sido = "&^%"
         for item in sido_forecasting_list:
@@ -77,7 +77,7 @@ def _get_latest_forecasting(api_key, headers, latest_date_in_api, url):
                 if item.get("inqireValue") == "0":
                     continue
 
-                _append_instance_in_list(forecasting_date, refined_forecasting_list, crop_code, crop_name, item, target)
+                _append_instance_in_list(forecasting_date, refined_forecasting_list, crop_code, item, target)
     return refined_forecasting_list
 
 
@@ -106,10 +106,9 @@ def _is_latest_data(date_in_api):
 def _get_forecasting_variables(item):
     forecasting_date = item.find('inputStdrDatetm').text
     detail_key = item.find('insectKey').text
-    crop_name = item.find('kncrNm').text
     crop_code = item.find('kncrCode').text
 
-    return forecasting_date, crop_code, crop_name, detail_key
+    return forecasting_date, crop_code, detail_key
 
 
 def _get_request_variables():
@@ -122,16 +121,13 @@ def _get_request_variables():
     return api_key, headers, url
 
 
-def _append_instance_in_list(date, bulk_creating_list, crop_code, crop_name, item, target):
+def _append_instance_in_list(date, bulk_creating_list, crop_code, item, target):
     forecasting = Forecasting(
         date=datetime.strptime(date, '%Y%m%d').date(),
-        sigungu_name=item.get("sigunguNm"),
-        sigungu_code=item.get("sigunguCode"),
-        crop_name=crop_name,
-        crop_code=crop_code,
+        medium_category_address_id=int(item.get("sigunguCode")),
+        crop_id=crop_code,
         target=target,
     )
-
     bulk_creating_list.append(forecasting)
 
 
