@@ -15,8 +15,8 @@ class Crop(models.Model):
         return self.name
 
     class Meta:
-        ordering = ["-code"]
         db_table = 'crop'
+        ordering = ["-code"]
 
 
 class ProducingCrop(models.Model):
@@ -24,7 +24,7 @@ class ProducingCrop(models.Model):
         Farm, related_name="producing_crop_set", on_delete=models.CASCADE
     )
     crop = models.ForeignKey(
-        Crop, related_name="producing_crop_set", on_delete=models.CASCADE
+        Crop, related_name="producing_crop_set", on_delete=models.CASCADE, db_column='crop_code'
     )
     is_in_house = models.BooleanField(default=False)
 
@@ -32,5 +32,5 @@ class ProducingCrop(models.Model):
         return f"{self.farm.__str__()} {self.crop.name}"
 
     class Meta:
-        ordering = ["-id"]
         db_table = 'producing_crop'
+        ordering = ["-id"]
