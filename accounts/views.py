@@ -54,7 +54,7 @@ def signup(request):
         phone_number = request.POST['PhoneNumber']
         large_category_address = request.POST['LargeCategoryAddress']
         medium_category_address = request.POST['MediumCategoryAddress']
-        crop_name = request.POST['CropName']
+        crop_code = request.POST['Crop']
 
         if password == confirm_password:
             request_body['username'] = username
@@ -64,11 +64,11 @@ def signup(request):
                 {
                     "producing_crops": [
                         {
-                            "name": crop_name
+                            "code": crop_code
                         }
                     ],
-                    "large_category_address": large_category_address,
-                    "medium_category_address": medium_category_address
+                    "large_category_address": int(large_category_address),
+                    "medium_category_address": int(medium_category_address)
                 }
             ]
 
