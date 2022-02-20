@@ -14,7 +14,9 @@ from forecasting.tasks import c_catch_latest_forecasting
 
 class ForecastingViewSet(ModelViewSet):
     """
-        Temporary Using API ViewSet in order to test forecasting data
+        Temporary Using API ViewSet in order to test forecasting data.
+
+        This View inherits ModelViewSet in order to provide full CRUD features.
     """
     queryset = Forecasting.objects.all()
     serializer_class = ForecastingSerializer
@@ -23,7 +25,10 @@ class ForecastingViewSet(ModelViewSet):
 @api_view(["GET"])
 def update_forecasting(request):
     """
-        API View that immediately act on periodic work of catching the latest forecasting
+        API View that immediately act on periodic work of catching the latest forecasting.
+
+        This View mainly works on checking if the latest forecasting is updated
+        and sending SMS alarm to users when it catches the latest forecasting.
     """
     jwt = _get_jwt_from_header(request)
     user_id = _get_user_id_from_jwt(jwt)
