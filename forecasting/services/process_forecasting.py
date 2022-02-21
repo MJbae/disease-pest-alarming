@@ -16,7 +16,6 @@ def process_latest_forecasting():
     Check the latest forecasting, Send the one with SMS and Save in DB
 
     Parameters:
-        None
 
     Returns:
         None
