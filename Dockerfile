@@ -9,4 +9,7 @@ RUN pip3 install -r requirements.txt
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 80
-CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:80"]
+
+RUN ["chmod", "+x", "/djangoproject/startup.sh"]
+
+CMD ["/djangoproject/startup.sh"]
