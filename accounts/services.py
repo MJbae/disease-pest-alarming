@@ -8,6 +8,7 @@ def save_nested_models_in_new_user(farms, user_id):
 
     Parameters:
         farms(list): list with Farm model instance elements
+        user_id(int): primary key from user model instance
 
     Returns:
         None
