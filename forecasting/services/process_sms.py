@@ -28,15 +28,20 @@ def send_forecasting_to_owners(latest_forecasting_list):
             producing_crops = ProducingCrop.objects.filter(farm=farm)
             for producing_crop in producing_crops:
                 for forecasting in latest_forecasting_list:
-                    # TODO: DB에 address code와 crop code 갱신 후, __dict__ 대신 '.'으로 속성 조회
-                    medium_address_in_farm = farm.__dict__.get("medium_category_address_id")
-                    medium_address_in_forecasting = forecasting.__dict__.get("medium_category_address_id")
-                    crop_in_producing_crop = producing_crop.__dict__.get("crop_id")
-                    crop_in_forecasting = forecasting.__dict__.get("crop_id")
-                    if crop_in_producing_crop == crop_in_forecasting and medium_address_in_farm == medium_address_in_forecasting:
+                    if is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
                         owner_number = owner.phone_number
                         forecasting_massage = forecasting.__str__()
                         send_sms(owner_number, forecasting_massage)
+
+
+def is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
+    # TODO: DB에 address code와 crop code 갱신 후, __dict__ 대신 '.'으로 속성 조회
+    medium_address_in_farm = farm.__dict__.get("medium_category_address_id")
+    medium_address_in_forecasting = forecasting.__dict__.get("medium_category_address_id")
+    crop_in_producing_crop = producing_crop.__dict__.get("crop_id")
+    crop_in_forecasting = forecasting.__dict__.get("crop_id")
+
+    return crop_in_producing_crop == crop_in_forecasting and medium_address_in_farm == medium_address_in_forecasting
 
 
 def send_sms(to_number, content):
