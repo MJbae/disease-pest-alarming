@@ -9,8 +9,6 @@ services:
       - .:/code
     ports:
       - "80:80"
-    env_file:
-      - ./.env
     environment:
       - DJANGO_ENV=prod
       - DJANGO_SETTINGS_MODULE=backend.settings.prod
