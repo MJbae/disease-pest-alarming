@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   web:
-    build: .
+    image: gentlemj/forecasting:1.25
     container_name: django
     command: gunicorn backend.wsgi:application --bind 0.0.0.0:80
     volumes:
@@ -16,9 +16,8 @@ services:
       - DJANGO_SETTINGS_MODULE=backend.settings.prod
   consumer:
     restart: always
+    image: gentlemj/forecasting:1.25
     container_name: celery-worker
-    build:
-      context: .
     command: celery -A backend worker -l info
     volumes:
       - .:/code
@@ -31,9 +30,8 @@ services:
       - DJANGO_SETTINGS_MODULE=backend.settings.prod
   periodic_producer:
     restart: always
+    image: gentlemj/forecasting:1.25
     container_name: celery-beat
-    build:
-      context: .
     command: celery -A backend beat -l info
     volumes:
       - .:/code
