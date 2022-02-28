@@ -1,9 +1,7 @@
 ## Disease & Pest Alarm
 > Disease and Pest Forecasting Service based on SMS Alarm
 ### How to use
-1. Sign Up in Simple
-   * [Here to Sign Up](https://disease-pest-alarming.azurewebsites.net/signup/)
-2. Get SMS Alarm When it occurs
+* Get SMS Alarm When it occurs
 
    * SMS Example
     ~~~text
