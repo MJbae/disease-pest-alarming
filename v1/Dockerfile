@@ -5,6 +5,6 @@ RUN apt-get update && apt-get install -y python3-pip libcurl4-openssl-dev libssl
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /code
-ADD . /code
+ADD .. /code
 
 RUN pip3 install --upgrade --ignore-installed pip setuptools && pip3 install -r requirements.txt
