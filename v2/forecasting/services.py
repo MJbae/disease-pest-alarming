@@ -6,7 +6,7 @@ import requests
 import xml.etree.ElementTree as elemTree
 
 from .domains import ForecastingDto, AffectedFarmDto
-from .exceptions import DateNotFoundException
+from .exceptions import DateNotFoundException, NotLatestException
 from .models import Forecasting
 from .utils import convert_text_to_data_structure
 
@@ -17,10 +17,10 @@ def collect_the_latest_forecasting() -> Set[ForecastingDto]:
     latest_date_from_source = _get_the_latest_forecasting_date(forecasting_generator)
 
     if latest_date_from_source is None:
-        raise DateNotFoundException(f"Fail to find date field in forecasting source")
+        raise DateNotFoundException("Fail to find date field in forecasting source")
 
     if not _is_latest_forecasting(latest_date_from_source):
-        raise Exception
+        raise NotLatestException(f"{latest_date_from_source} is not the latest forecasting")
 
     latest_forecasting_set = _get_latest_forecasting_set(api_key, headers, latest_date_from_source, url)
 
