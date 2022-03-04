@@ -16,8 +16,8 @@ class Address:
 class ForecastingDto:
     target: str
     date: date
-    crop: Crop
-    address: Address
+    crop: str
+    address: str
 
 
 @dataclass(unsafe_hash=True)
