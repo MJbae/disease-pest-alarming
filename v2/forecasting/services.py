@@ -6,6 +6,7 @@ import requests
 import xml.etree.ElementTree as elemTree
 
 from domains import ForecastingDto, AffectedFarmDto
+from models import Forecasting
 from utils import convert_text_to_data_structure
 
 
