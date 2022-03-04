@@ -12,10 +12,14 @@ class Address:
     name: str
 
 
+class Target:
+    name: str
+
+
 @dataclass(unsafe_hash=True)
 class ForecastingDto:
-    target: str
     date: date
+    target: str
     crop: str
     address: str
 
@@ -24,3 +28,11 @@ class ForecastingDto:
 class AffectedFarmDto:
     contact: str
     info: ForecastingDto
+
+
+class Forecasting:
+    def __init__(self, date: date, address: Address, crop: Crop, target: Target):
+        self.date = date
+        self.address = address
+        self.crop = crop
+        self.target = target
