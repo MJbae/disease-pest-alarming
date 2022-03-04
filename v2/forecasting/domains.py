@@ -19,9 +19,9 @@ class Target:
 @dataclass(unsafe_hash=True)
 class ForecastingDto:
     date: date
-    target: str
-    crop: str
-    address: str
+    target_name: str
+    crop_name: str
+    address_name: str
 
 
 @dataclass(unsafe_hash=True)
