@@ -13,20 +13,20 @@ from .utils import convert_text_to_data_structure
 def collect_the_latest_forecasting() -> Set[ForecastingDto]:
     api_key, headers, url = _get_request_variables()
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
-    latest_date_in_api = _get_date_of_latest_forecasting(forecasting_list)
+    latest_date_from_source = _get_date_of_latest_forecasting(forecasting_list)
 
-    if latest_date_in_api is None:
+    if latest_date_from_source is None:
         raise Exception
 
-    if not _is_latest_data(latest_date_in_api):
+    if not _is_latest_data(latest_date_from_source):
         raise Exception
 
-    latest_forecasting_set = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
+    latest_forecasting_set = _get_latest_forecasting_set(api_key, headers, latest_date_from_source, url)
 
     return latest_forecasting_set
 
 
-def extract_influential_forecasting(forecasting: ForecastingDto) -> Set[ForecastingDto]:
+def extract_influential_forecasting(forecasting_set: Set[ForecastingDto]) -> Set[ForecastingDto]:
     pass
 
 
@@ -38,13 +38,13 @@ def send_alarms(farms: Set[AffectedFarmDto]):
     pass
 
 
-def _get_latest_forecasting(api_key, headers, latest_date_in_api, url) -> Set[ForecastingDto]:
+def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Set[ForecastingDto]:
     refined_forecasting_set = set()
-    forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
+    forecasting_generator = _get_basic_forecasting_results(api_key, headers, url)
     latest_date_text = latest_date_in_api.strftime('%Y%m%d')
 
     # 테스트 편리를 위해 enumerate로 idx 추가
-    for idx, item in enumerate(forecasting_list):
+    for idx, item in enumerate(forecasting_generator):
         # 테스트 편리를 위해 idx > x 조건 추가 / 메모리 한계 상 idx > 60 조건이 최대치임(6개월치 예찰정보 처리량)
         # if idx > 3:
         #     break
@@ -83,7 +83,7 @@ def _get_latest_forecasting(api_key, headers, latest_date_in_api, url) -> Set[Fo
     return refined_forecasting_set
 
 
-def _get_date_of_latest_forecasting(forecasting_list):
+def _get_date_of_latest_forecasting(forecasting_list) -> Optional[date]:
     max_date = None
     for item in forecasting_list:
         date_in_text = item.find('inputStdrDatetm').text
@@ -174,6 +174,6 @@ def _get_basic_forecasting_results(api_key, headers, url):
     }
     response = requests.get(url=url, params=path_params, headers=headers)
     tree = elemTree.fromstring(response.content)
-    forecasting_list = tree.iter(tag="item")
+    forecasting_generator = tree.iter(tag="item")
 
-    return forecasting_list
+    return forecasting_generator

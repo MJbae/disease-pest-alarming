@@ -16,7 +16,7 @@ def test_collect_the_latest_forecasting():
     baker.make('Forecasting', date=earliest_date, _fill_optional=['address', 'crop', 'target'])
     latest_forecasting = baker.make('Forecasting', date=latest_date, _fill_optional=['address', 'crop', 'target'])
 
-    # 2. 최신 예찰정보를 다음의 형태로 반환, Set[ForecastingDto]
+    # 2. 최신 예찰정보를 Set[ForecastingDto] 형태로 반환
     forecasting_set = collect_the_latest_forecasting()
 
     # 3. forecasting_set 내 모든 구성요소의 date가 최신 날짜를 가리키는지 체크
