@@ -31,6 +31,9 @@ INSTALLED_APPS = [
     # third apps
     "rest_framework",
     "drf_yasg",
+
+    # local apps
+    "forecasting",
 ]
 
 MIDDLEWARE = [
