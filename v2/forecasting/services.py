@@ -13,13 +13,13 @@ from .utils import convert_text_to_data_structure
 
 def collect_the_latest_forecasting() -> Set[ForecastingDto]:
     api_key, headers, url = _get_request_variables()
-    forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
-    latest_date_from_source = _get_date_of_latest_forecasting(forecasting_list)
+    forecasting_generator = _get_forecasting_generator(api_key, headers, url)
+    latest_date_from_source = _get_the_latest_forecasting_date(forecasting_generator)
 
     if latest_date_from_source is None:
         raise DateNotFoundException(f"Fail to find date field in forecasting source")
 
-    if not _is_latest_data(latest_date_from_source):
+    if not _is_latest_forecasting(latest_date_from_source):
         raise Exception
 
     latest_forecasting_set = _get_latest_forecasting_set(api_key, headers, latest_date_from_source, url)
@@ -41,7 +41,7 @@ def send_alarms(farms: Set[AffectedFarmDto]):
 
 def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Set[ForecastingDto]:
     refined_forecasting_set = set()
-    forecasting_generator = _get_basic_forecasting_results(api_key, headers, url)
+    forecasting_generator = _get_forecasting_generator(api_key, headers, url)
     latest_date_text = latest_date_in_api.strftime('%Y%m%d')
 
     # 테스트 편리를 위해 enumerate로 idx 추가
@@ -84,7 +84,7 @@ def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Se
     return refined_forecasting_set
 
 
-def _get_date_of_latest_forecasting(forecasting_list) -> Optional[date]:
+def _get_the_latest_forecasting_date(forecasting_list) -> Optional[date]:
     max_date = None
     for item in forecasting_list:
         date_in_text = item.find('inputStdrDatetm').text
@@ -97,7 +97,7 @@ def _get_date_of_latest_forecasting(forecasting_list) -> Optional[date]:
     return max_date
 
 
-def _is_latest_data(date_in_api):
+def _is_latest_forecasting(date_in_api):
     # forecasting record 내 조사 날짜 컬럼 추가
     # 기존 DB 내 최신 forecasting 날짜와 api 호출에 따른 forecasting의 날짜를 비교해서 최선여부 확인할 것
     latest_forecasting = Forecasting.objects.latest("date")
@@ -166,7 +166,7 @@ def _get_sido_forecasting_results(api_key, detail_key, headers, url):
     return sido_forecasting_list
 
 
-def _get_basic_forecasting_results(api_key, headers, url):
+def _get_forecasting_generator(api_key, headers, url):
     path_params = {
         "apiKey": api_key,
         "serviceCode": "SVC51",
