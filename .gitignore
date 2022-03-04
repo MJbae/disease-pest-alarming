@@ -354,3 +354,4 @@ fabric.properties
 .idea
 /.idea/misc.xml
 /.idea/inspectionProfiles/profiles_settings.xml
+db.sqlite3
