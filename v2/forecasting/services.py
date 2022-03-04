@@ -27,16 +27,33 @@ def collect_the_latest_forecasting() -> Set[ForecastingDto]:
     return latest_forecasting_set
 
 
-def extract_influential_forecasting(forecasting_set: Set[ForecastingDto]) -> Set[ForecastingDto]:
-    pass
+def find_affected_farms(forecasting_set: Set[ForecastingDto]) -> Set[AffectedFarmDto]:
+    affected_farm_set = set()
+    owners = User.objects.filter(is_staff=False)  # TODO: 왈러스 연산자 사용해서 리팩토링 시도
+    for owner in owners:
+        farms = Farm.objects.filter(owner=owner)
+        for farm in farms:
+            producing_crops = Crop.objects.filter(farm=farm)
+            for producing_crop in producing_crops:
+                for forecasting in forecasting_set:
+                    if _is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
+                        affected_farm_set.add(AffectedFarmDto(contact=owner.phone_number, info=forecasting))
 
-
-def find_affected_farms(damages: Set[ForecastingDto]) -> Set[AffectedFarmDto]:
-    pass
+    return affected_farm_set
 
 
 def send_alarms(farms: Set[AffectedFarmDto]):
     pass
+
+
+def _is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
+    # TODO: DB에 address code와 crop code 갱신 후, __dict__ 대신 '.'으로 속성 조회
+    medium_address_in_farm = farm.__dict__.get("medium_category_address_id")
+    medium_address_in_forecasting = forecasting.__dict__.get("medium_category_address_id")
+    crop_in_producing_crop = producing_crop.__dict__.get("crop_id")
+    crop_in_forecasting = forecasting.__dict__.get("crop_id")
+
+    return crop_in_producing_crop == crop_in_forecasting and medium_address_in_farm == medium_address_in_forecasting
 
 
 def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Set[ForecastingDto]:
