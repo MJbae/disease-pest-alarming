@@ -12,6 +12,7 @@ class Address:
     name: str
 
 
+@dataclass(unsafe_hash=True)
 class Target:
     name: str
 
