@@ -29,10 +29,3 @@ class AffectedFarmDto:
     contact: str
     info: ForecastingDto
 
-
-class Forecasting:
-    def __init__(self, date: date, address: Address, crop: Crop, target: Target):
-        self.date = date
-        self.address = address
-        self.crop = crop
-        self.target = target
