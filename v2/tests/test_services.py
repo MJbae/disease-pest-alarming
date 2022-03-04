@@ -18,7 +18,6 @@ def test_collect_the_latest_forecasting():
 
     # 2. 최신 예찰정보를 다음의 형태로 반환, Set[ForecastingDto]
     forecasting_set = collect_the_latest_forecasting()
-    print(f'forecasting_set: {forecasting_set}')
 
     # 3. forecasting_set 내 모든 구성요소의 date가 최신 날짜를 가리키는지 체크
     for forecasting in forecasting_set:

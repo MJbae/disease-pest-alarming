@@ -43,13 +43,14 @@ def _get_latest_forecasting(api_key, headers, latest_date_in_api, url) -> Set[Fo
     forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
     latest_date_text = latest_date_in_api.strftime('%Y%m%d')
 
-    for idx, item in enumerate(forecasting_list):  # TODO: 테스트 편리를 위해 enumerate로 idx 추가
-        # 메모리 한계 상 idx > 60 조건이 최대치임(6개월치 예찰정보 처리량)
-        if idx > 3:  # TODO: 테스트 편리를 위해 idx > x 조건 추가
-            break
+    # 테스트 편리를 위해 enumerate로 idx 추가
+    for idx, item in enumerate(forecasting_list):
+        # 테스트 편리를 위해 idx > x 조건 추가 / 메모리 한계 상 idx > 60 조건이 최대치임(6개월치 예찰정보 처리량)
+        # if idx > 3:
+        #     break
 
-        # if latest_date_text != item.find('inputStdrDatetm').text: # TODO: 테스트 종료 후, 최신날짜의 예찰정보만 취급하도록 주석 제거
-        #     continue
+        if latest_date_text != item.find('inputStdrDatetm').text:
+            continue
 
         forecasting_date, crop_code, detail_key = _get_forecasting_variables(item)
         sido_forecasting_list = _get_sido_forecasting_results(api_key, detail_key, headers, url)
@@ -100,7 +101,6 @@ def _is_latest_data(date_in_api):
     # 기존 DB 내 최신 forecasting 날짜와 api 호출에 따른 forecasting의 날짜를 비교해서 최선여부 확인할 것
     latest_forecasting = Forecasting.objects.latest("date")
     date_in_db = latest_forecasting.date
-
     return True if date_in_api > date_in_db else False
 
 
