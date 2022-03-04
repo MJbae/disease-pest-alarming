@@ -14,14 +14,14 @@ def test_collect_the_latest_forecasting():
     earliest_date = datetime.strptime("2021-10-26", "%Y-%m-%d").date()
 
     baker.make('Forecasting', date=earliest_date, _fill_optional=['address', 'crop', 'target'])
-    latest_forecasting = baker.make('Forecasting', date=latest_date, _fill_optional=['address', 'crop', 'target'])
+    forecasting_from_db = baker.make('Forecasting', date=latest_date, _fill_optional=['address', 'crop', 'target'])
 
     # 2. 최신 예찰정보를 Set[ForecastingDto] 형태로 반환
     forecasting_set = collect_the_latest_forecasting()
 
     # 3. forecasting_set 내 모든 구성요소의 date가 최신 날짜를 가리키는지 체크
     for forecasting in forecasting_set:
-        assert forecasting.date > latest_forecasting.date
+        assert forecasting.date > forecasting_from_db.date
 
 
 def test_extract_influential_forecasting():
