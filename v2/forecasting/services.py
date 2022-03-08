@@ -1,9 +1,14 @@
 import os
+import time
 from typing import Set, Optional
 from datetime import datetime, date
 
+import base64
+import hashlib
+import hmac
 import requests
 import xml.etree.ElementTree as elemTree
+from django.db import transaction
 
 from .domains import ForecastingDto, AffectedFarmDto
 from .exceptions import DateNotFoundException, NotLatestException
@@ -39,8 +44,64 @@ def find_affected_farms(forecasting_set: Set[ForecastingDto]) -> Set[AffectedFar
     return affected_farm_set
 
 
-def send_alarms(farms: Set[AffectedFarmDto]):
-    pass
+def send_alarms(farm_set: Set[AffectedFarmDto]):
+    total_to_send = 0
+    result = {}
+    for farm in farm_set:
+        info = farm.info
+        message = f"{info.date}, {info.address_name}의 {info.crop_name}에서 {info.target_name} 피해 발생"
+
+        result = send_sms(to_number=farm.contact, content=message)
+        if result['statusCode'] != "202":
+            return result['statusName'], total_to_send
+
+        total_to_send += 1
+
+    return result['statusName'], total_to_send
+
+
+def send_sms(to_number, content):
+    base_url = os.environ.get("SENS_URL")
+    access_key = os.environ.get("SENS_ACCESS_KEY")
+    secret_key = os.environ.get("SENS_SECRET_KEY")
+    service_id = os.environ.get("SENS_SERVICE_ID")
+    from_number = os.environ.get("SENS_FROM_NUMBER")
+    uri = f"/sms/v2/services/{service_id}/messages"
+    full_uri = base_url + uri
+    timestamp = str(int(time.time() * 1000))
+
+    body = {
+        "type": "sms",
+        "from": from_number,
+        "content": content,
+        "messages": [
+            {
+                "to": to_number,
+                "subject": "병해충 예찰 서비스",
+                "content": content
+            }
+        ]
+    }
+
+    signature = _make_signature(access_key, secret_key, 'POST', uri, timestamp)
+    headers = {
+        'Content-Type': 'application/json; charset=utf-8',
+        'x-ncp-apigw-timestamp': timestamp,
+        'x-ncp-iam-access-key': access_key,
+        'x-ncp-apigw-signature-v2': signature
+    }
+
+    res = requests.post(full_uri, json=body, headers=headers)
+    return res.json()
+
+
+def _make_signature(access_key, secret_key, method, uri, timestamp):
+    secret_key = bytes(secret_key, 'UTF-8')
+
+    message = method + " " + uri + "\n" + timestamp + "\n" + access_key
+    message = bytes(message, 'UTF-8')
+    result = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
+    return result
 
 
 def _is_affected_farm(farm, forecasting, producing_crop):
