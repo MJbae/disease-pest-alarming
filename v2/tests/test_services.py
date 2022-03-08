@@ -50,5 +50,29 @@ def test_can_find_affected_farms():
     assert farm.info == forecasting_dto
 
 
+def test_can_filter_not_affected_farms():
+    # mock persistent data
+    owner = baker.make("forecasting.User", phone_number="010-1234-1234")
+    address = baker.make('Address', code=123, name="테스트시")
+    crop = baker.make('Crop', code="F123", name="테스트작물")
+    farm = baker.make('Farm', owner=owner, address=address)
+    baker.make('ProducingCrop', farm=farm, crop=crop)
+
+    # mock forecasting dto set
+    forecasting_set = set()
+    forecasting_dto = ForecastingDto(date=date.today(),
+                                     target_name="test_pest",
+                                     crop_name="test_crop",
+                                     address_name="test_address")
+    forecasting_set.add(forecasting_dto)
+
+    # return affected farms
+    farm_set = find_affected_farms(forecasting_set)
+
+    # test returned farms are valid
+    with pytest.raises(KeyError, match='pop from an empty set'):
+        farm = farm_set.pop()
+
+
 def test_send_alarms():
     pass
