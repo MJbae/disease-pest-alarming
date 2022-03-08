@@ -3,8 +3,8 @@ from datetime import datetime, date
 import pytest
 from model_bakery import baker
 
-from forecasting.domains import ForecastingDto
-from forecasting.services import collect_the_latest_forecasting, find_affected_farms
+from forecasting.domains import ForecastingDto, AffectedFarmDto
+from forecasting.services import collect_the_latest_forecasting, find_affected_farms, send_alarms
 
 pytestmark = [pytest.mark.django_db]
 
@@ -27,7 +27,7 @@ def test_can_collect_later_dated_forecasting():
 
 def test_can_find_affected_farms():
     # mock persistent data
-    owner = baker.make("forecasting.User", phone_number="010-1234-1234")
+    owner = baker.make("forecasting.User", phone_number="01012341234")
     address = baker.make('Address', code=123, name="가평군")
     crop = baker.make('Crop', code="F123", name="포도")
     farm = baker.make('Farm', owner=owner, address=address)
@@ -52,7 +52,7 @@ def test_can_find_affected_farms():
 
 def test_can_filter_not_affected_farms():
     # mock persistent data
-    owner = baker.make("forecasting.User", phone_number="010-1234-1234")
+    owner = baker.make("forecasting.User", phone_number="01012341234")
     address = baker.make('Address', code=123, name="테스트시")
     crop = baker.make('Crop', code="F123", name="테스트작물")
     farm = baker.make('Farm', owner=owner, address=address)
@@ -74,5 +74,18 @@ def test_can_filter_not_affected_farms():
         farm = farm_set.pop()
 
 
-def test_send_alarms():
-    pass
+def test_can_send_alarms_to_all_affected_farm_owners():
+    # mock Set[AffectedFarmDto]
+    affected_farm_set = set()
+    forecasting_dto = ForecastingDto(date=date.today(),
+                                     target_name="test_pest",
+                                     crop_name="포도",
+                                     address_name="가평군")
+    affected_farm = AffectedFarmDto(contact="01041222594", info=forecasting_dto)
+    affected_farm_set.add(affected_farm)
+    # return result of sending alarms
+    result, success_to_send = send_alarms(affected_farm_set)
+
+    # check if the result is correct
+    assert result == "success"
+    assert success_to_send == 1
