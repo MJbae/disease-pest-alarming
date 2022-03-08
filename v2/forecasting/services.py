@@ -29,12 +29,9 @@ def collect_the_latest_forecasting() -> Set[ForecastingDto]:
 
 def find_affected_farms(forecasting_set: Set[ForecastingDto]) -> Set[AffectedFarmDto]:
     affected_farm_set = set()
-    owners = User.objects.filter(is_staff=False)  # TODO: 왈러스 연산자 사용해서 리팩토링 시도
-    for owner in owners:
-        farms = Farm.objects.filter(owner=owner)
-        for farm in farms:
-            producing_crops = ProducingCrop.objects.filter(farm=farm)
-            for producing_crop in producing_crops:
+    for owner in User.objects.filter(is_staff=False):
+        for farm in Farm.objects.filter(owner=owner):
+            for producing_crop in ProducingCrop.objects.filter(farm=farm):
                 for forecasting in forecasting_set:
                     if _is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
                         affected_farm_set.add(AffectedFarmDto(contact=owner.phone_number, info=forecasting))
