@@ -3,8 +3,8 @@ from datetime import datetime, date
 import pytest
 from model_bakery import baker
 
-from ..forecasting.domains import ForecastingDto
-from ..forecasting.services import collect_the_latest_forecasting, find_affected_farms
+from forecasting.domains import ForecastingDto
+from forecasting.services import collect_the_latest_forecasting, find_affected_farms
 
 pytestmark = [pytest.mark.django_db]
 
@@ -26,19 +26,26 @@ def test_collect_the_latest_forecasting():
 
 
 def test_find_affected_farms():
+    # mock persistent data
+    owner = baker.make("forecasting.User", phone_number="010-1234-1234")
+    address = baker.make('Address', code=123, name="가평군")
+    crop = baker.make('Crop', code="F123", name="포도")
+    farm = baker.make('Farm', owner=owner, address=address)
+    baker.make('ProducingCrop', farm=farm, crop=crop)
+
     # mock forecasting dto set
     forecasting_set = set()
-    forecasting_dto_1st = ForecastingDto(date=date.today(), target_name="test_pest", crop_name="포도", address_name="가평군")
-    forecasting_dto_2nd = ForecastingDto(date=date.today(), target_name="test_pest", crop_name="포도", address_name="화성시")
-    forecasting_set.add(forecasting_dto_1st)
-    forecasting_set.add(forecasting_dto_2nd)
-
-    # mock Farm and Owner
+    forecasting_dto = ForecastingDto(date=date.today(), target_name="test_pest", crop_name="포도", address_name="가평군")
+    forecasting_set.add(forecasting_dto)
 
     # return affected farms
     farm_set = find_affected_farms(forecasting_set)
+    farm = farm_set.pop()
 
     # test returned farms are valid
+    assert farm.contact == owner.phone_number
+    assert farm.info == forecasting_dto
+
 
 
 def test_send_alarms():
