@@ -33,7 +33,7 @@ def find_affected_farms(forecasting_set: Set[ForecastingDto]) -> Set[AffectedFar
         for farm in Farm.objects.filter(owner=owner):
             for producing_crop in ProducingCrop.objects.filter(farm=farm):
                 for forecasting in forecasting_set:
-                    if _is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
+                    if _is_affected_farm(farm, forecasting, producing_crop):
                         affected_farm_set.add(AffectedFarmDto(contact=owner.phone_number, info=forecasting))
 
     return affected_farm_set
@@ -43,7 +43,7 @@ def send_alarms(farms: Set[AffectedFarmDto]):
     pass
 
 
-def _is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
+def _is_affected_farm(farm, forecasting, producing_crop):
     address_in_farm = farm.address.name
     address_in_forecasting = forecasting.address_name
     crop_in_producing_crop = producing_crop.crop.name
