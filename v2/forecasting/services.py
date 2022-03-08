@@ -7,7 +7,7 @@ import xml.etree.ElementTree as elemTree
 
 from .domains import ForecastingDto, AffectedFarmDto
 from .exceptions import DateNotFoundException, NotLatestException
-from .models import Forecasting
+from .models import Forecasting, User, Farm, Crop, ProducingCrop
 from .utils import convert_text_to_data_structure
 
 
@@ -33,7 +33,7 @@ def find_affected_farms(forecasting_set: Set[ForecastingDto]) -> Set[AffectedFar
     for owner in owners:
         farms = Farm.objects.filter(owner=owner)
         for farm in farms:
-            producing_crops = Crop.objects.filter(farm=farm)
+            producing_crops = ProducingCrop.objects.filter(farm=farm)
             for producing_crop in producing_crops:
                 for forecasting in forecasting_set:
                     if _is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
@@ -48,12 +48,12 @@ def send_alarms(farms: Set[AffectedFarmDto]):
 
 def _is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
     # TODO: DB에 address code와 crop code 갱신 후, __dict__ 대신 '.'으로 속성 조회
-    medium_address_in_farm = farm.__dict__.get("medium_category_address_id")
-    medium_address_in_forecasting = forecasting.__dict__.get("medium_category_address_id")
-    crop_in_producing_crop = producing_crop.__dict__.get("crop_id")
-    crop_in_forecasting = forecasting.__dict__.get("crop_id")
+    address_in_farm = farm.__dict__.get("address")
+    address_in_forecasting = forecasting.__dict__.get("address")
+    crop_in_producing_crop = producing_crop.__dict__.get("crop")
+    crop_in_forecasting = forecasting.__dict__.get("crop")
 
-    return crop_in_producing_crop == crop_in_forecasting and medium_address_in_farm == medium_address_in_forecasting
+    return crop_in_producing_crop == crop_in_forecasting and address_in_farm == address_in_forecasting
 
 
 def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Set[ForecastingDto]:
