@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, date
 
 import pytest
@@ -81,7 +82,7 @@ def test_can_send_alarms_to_all_affected_farm_owners():
                                      target_name="test_pest",
                                      crop_name="포도",
                                      address_name="가평군")
-    affected_farm = AffectedFarmDto(contact="01041222594", info=forecasting_dto)
+    affected_farm = AffectedFarmDto(contact=os.environ.get("TEST_NUMBER"), info=forecasting_dto)
     affected_farm_set.add(affected_farm)
     # return result of sending alarms
     result, success_to_send = send_alarms(affected_farm_set)
