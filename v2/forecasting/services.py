@@ -48,10 +48,10 @@ def send_alarms(farms: Set[AffectedFarmDto]):
 
 def _is_valid_owner_to_send_sms(farm, forecasting, producing_crop):
     # TODO: DB에 address code와 crop code 갱신 후, __dict__ 대신 '.'으로 속성 조회
-    address_in_farm = farm.__dict__.get("address")
-    address_in_forecasting = forecasting.__dict__.get("address")
-    crop_in_producing_crop = producing_crop.__dict__.get("crop")
-    crop_in_forecasting = forecasting.__dict__.get("crop")
+    address_in_farm = farm.address
+    address_in_forecasting = forecasting.address_name
+    crop_in_producing_crop = producing_crop.crop
+    crop_in_forecasting = forecasting.crop_name
 
     return crop_in_producing_crop == crop_in_forecasting and address_in_farm == address_in_forecasting
 
