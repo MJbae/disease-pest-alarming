@@ -2,12 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 
 
-@dataclass(unsafe_hash=True)
-class Target:
-    name: str
-
-
-@dataclass(unsafe_hash=True)
+@dataclass(unsafe_hash=True, frozen=True)
 class ForecastingDto:
     date: date
     target_name: str
@@ -15,7 +10,7 @@ class ForecastingDto:
     address_name: str
 
 
-@dataclass(unsafe_hash=True)
+@dataclass(unsafe_hash=True, frozen=True)
 class AffectedFarmDto:
     contact: str
     info: ForecastingDto
