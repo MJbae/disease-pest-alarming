@@ -5,7 +5,7 @@ from datetime import datetime, date
 import requests
 import xml.etree.ElementTree as elemTree
 
-from forecasting.domains import ForecastingDto, AffectedFarmDto
+from forecasting.dtos import ForecastingDto, AffectedFarmDto
 from forecasting.exceptions import DateNotFoundException, NotLatestException
 from forecasting.models import Forecasting, User, Farm, Crop, ProducingCrop
 from forecasting.utils import convert_text_to_list

@@ -4,7 +4,7 @@ from datetime import datetime, date
 import pytest
 from model_bakery import baker
 
-from forecasting.domains import ForecastingDto, AffectedFarmDto
+from forecasting.dtos import ForecastingDto, AffectedFarmDto
 from forecasting.services.forecasting import collect_the_latest_forecasting
 from forecasting.services.farm import find_affected_farms
 from forecasting.services.alarm import send_alarms

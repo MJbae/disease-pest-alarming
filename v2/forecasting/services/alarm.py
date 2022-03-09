@@ -7,7 +7,7 @@ import hashlib
 import hmac
 import requests
 
-from forecasting.domains import ForecastingDto, AffectedFarmDto
+from forecasting.dtos import ForecastingDto, AffectedFarmDto
 
 
 def send_alarms(farm_set: Set[AffectedFarmDto]) -> (str, int):

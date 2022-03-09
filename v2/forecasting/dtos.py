@@ -2,16 +2,6 @@ from dataclasses import dataclass
 from datetime import date
 
 
-class Crop:
-    code: str
-    name: str
-
-
-class Address:
-    code: str
-    name: str
-
-
 @dataclass(unsafe_hash=True)
 class Target:
     name: str
@@ -29,4 +19,3 @@ class ForecastingDto:
 class AffectedFarmDto:
     contact: str
     info: ForecastingDto
-

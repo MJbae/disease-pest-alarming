@@ -1,6 +1,6 @@
 from typing import Set
 
-from forecasting.domains import ForecastingDto, AffectedFarmDto
+from forecasting.dtos import ForecastingDto, AffectedFarmDto
 from forecasting.models import Forecasting, User, Farm, Crop, ProducingCrop
 
 
