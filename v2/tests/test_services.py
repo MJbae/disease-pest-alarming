@@ -72,7 +72,7 @@ def test_can_filter_not_affected_farms():
 
     # test returned farms are valid
     with pytest.raises(KeyError, match='pop from an empty set'):
-        farm = farm_set.pop()
+        farm_set.pop()
 
 
 def test_can_send_alarms_to_all_affected_farm_owners():
@@ -84,6 +84,7 @@ def test_can_send_alarms_to_all_affected_farm_owners():
                                      address_name="가평군")
     affected_farm = AffectedFarmDto(contact=os.environ.get("TEST_NUMBER"), info=forecasting_dto)
     affected_farm_set.add(affected_farm)
+
     # return result of sending alarms
     result, success_to_send = send_alarms(affected_farm_set)
 
