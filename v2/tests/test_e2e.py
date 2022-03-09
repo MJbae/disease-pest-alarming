@@ -14,7 +14,7 @@ pytestmark = [pytest.mark.django_db, pytest.mark.e2e]
 
 def test_from_catching_the_latest_forecasting_to_sending_alarm():
     # mock forecasting
-    owner = baker.make("forecasting.User", phone_number="01041222594")
+    owner = baker.make("forecasting.User", phone_number=os.environ.get("TEST_NUMBER"))
     address = baker.make('Address', code=123, name="가평군")
     crop = baker.make('Crop', code="F123", name="포도")
     farm = baker.make('Farm', owner=owner, address=address)
