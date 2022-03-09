@@ -64,16 +64,32 @@ def _make_alarm_message(info):
 
 
 def send_sms(to_number, content):
-    base_url = os.environ.get("SENS_URL")
-    access_key = os.environ.get("SENS_ACCESS_KEY")
-    secret_key = os.environ.get("SENS_SECRET_KEY")
-    service_id = os.environ.get("SENS_SERVICE_ID")
-    from_number = os.environ.get("SENS_FROM_NUMBER")
-    uri = f"/sms/v2/services/{service_id}/messages"
-    full_uri = base_url + uri
+    access_key, secret_key = _get_key_vars()
+    base_url, from_number, service_id = _get_reqeust_params()
+    endpoint = f"/sms/v2/services/{service_id}/messages"
+    full_uri = base_url + endpoint
     timestamp = str(int(time.time() * 1000))
 
-    body = {
+    body = _make_body(content, from_number, to_number)
+
+    signature = _make_signature(access_key, secret_key, 'POST', endpoint, timestamp)
+    header = _make_header(access_key, signature, timestamp)
+
+    res = requests.post(full_uri, json=body, headers=header)
+    return res.json()
+
+
+def _make_header(access_key, signature, timestamp):
+    return {
+        'Content-Type': 'application/json; charset=utf-8',
+        'x-ncp-apigw-timestamp': timestamp,
+        'x-ncp-iam-access-key': access_key,
+        'x-ncp-apigw-signature-v2': signature
+    }
+
+
+def _make_body(content, from_number, to_number):
+    return {
         "type": "sms",
         "from": from_number,
         "content": content,
@@ -86,16 +102,18 @@ def send_sms(to_number, content):
         ]
     }
 
-    signature = _make_signature(access_key, secret_key, 'POST', uri, timestamp)
-    headers = {
-        'Content-Type': 'application/json; charset=utf-8',
-        'x-ncp-apigw-timestamp': timestamp,
-        'x-ncp-iam-access-key': access_key,
-        'x-ncp-apigw-signature-v2': signature
-    }
 
-    res = requests.post(full_uri, json=body, headers=headers)
-    return res.json()
+def _get_reqeust_params():
+    base_url = os.environ.get("SENS_URL")
+    service_id = os.environ.get("SENS_SERVICE_ID")
+    from_number = os.environ.get("SENS_FROM_NUMBER")
+    return base_url, from_number, service_id
+
+
+def _get_key_vars():
+    access_key = os.environ.get("SENS_ACCESS_KEY")
+    secret_key = os.environ.get("SENS_SECRET_KEY")
+    return access_key, secret_key
 
 
 def _make_signature(access_key, secret_key, method, uri, timestamp):
