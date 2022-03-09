@@ -96,7 +96,7 @@ def _is_latest_forecasting(date_in_api):
 def _get_forecasting_variables(item):
     forecasting_date = item.find('inputStdrDatetm').text
     detail_key = item.find('insectKey').text
-    crop_code = item.find('kncrCode').text
+    crop_code = item.find('kncrNm').text
 
     return forecasting_date, crop_code, detail_key
 
