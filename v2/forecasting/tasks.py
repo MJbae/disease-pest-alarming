@@ -5,8 +5,6 @@ from forecasting.services.forecasting import collect_the_latest_forecasting
 from forecasting.services.farm import find_affected_farms
 from forecasting.services.alarm import send_alarms
 
-from forecasting.exceptions import DateNotFoundException, NotLatestException, FarmNotAffectedException
-
 logger = logging.getLogger('celery')
 
 
