@@ -44,7 +44,7 @@ def find_affected_farms(forecasting_set: Set[ForecastingDto]) -> Set[AffectedFar
     return affected_farm_set
 
 
-def send_alarms(farm_set: Set[AffectedFarmDto]):
+def send_alarms(farm_set: Set[AffectedFarmDto]) -> (str, int):
     total_to_send = 0
     result = {}
     for farm in farm_set:
