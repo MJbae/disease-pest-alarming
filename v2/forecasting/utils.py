@@ -1,4 +1,4 @@
-def convert_text_to_data_structure(text):
+def convert_text_to_list(text: str) -> list[dict[str, str]]:
     """
     Convert text to python data structure
 
@@ -6,7 +6,7 @@ def convert_text_to_data_structure(text):
         text(str): text from OPEN API response
 
     Returns:
-        result(list): list of dictionary elements
+        result(list[dict[str, str]]): list of dictionary elements
     """
 
     key_idx_start = 0

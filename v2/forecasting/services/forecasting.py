@@ -5,53 +5,43 @@ from datetime import datetime, date
 import requests
 import xml.etree.ElementTree as elemTree
 
-from .domains import ForecastingDto, AffectedFarmDto
-from .models import Forecasting
-from .utils import convert_text_to_data_structure
+from forecasting.dtos import ForecastingDto, AffectedFarmDto
+from forecasting.exceptions import DateNotFoundException, NotLatestException
+from forecasting.models import Forecasting, User, Farm, Crop, ProducingCrop
+from forecasting.utils import convert_text_to_list
 
 
 def collect_the_latest_forecasting() -> Set[ForecastingDto]:
-    api_key, headers, url = _get_request_variables()
-    forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
-    latest_date_in_api = _get_date_of_latest_forecasting(forecasting_list)
+    api_key, headers, url = _get_request_vars()
+    forecasting_generator = _get_forecasting_generator(api_key, headers, url)
+    latest_date_from_source = _get_the_latest_forecasting_date(forecasting_generator)
 
-    if latest_date_in_api is None:
-        raise Exception
+    if latest_date_from_source is None:
+        raise DateNotFoundException("Fail to find date field in forecasting source")
 
-    if not _is_latest_data(latest_date_in_api):
-        raise Exception
+    if not _is_latest_forecasting(latest_date_from_source):
+        raise NotLatestException(f"{latest_date_from_source} is not the latest forecasting")
 
-    latest_forecasting_set = _get_latest_forecasting(api_key, headers, latest_date_in_api, url)
+    latest_forecasting_set = _get_latest_forecasting_set(api_key, headers, latest_date_from_source, url)
 
     return latest_forecasting_set
 
 
-def extract_influential_forecasting(forecasting: ForecastingDto) -> Set[ForecastingDto]:
-    pass
-
-
-def find_affected_farms(damages: Set[ForecastingDto]) -> Set[AffectedFarmDto]:
-    pass
-
-
-def send_alarms(farms: Set[AffectedFarmDto]):
-    pass
-
-
-def _get_latest_forecasting(api_key, headers, latest_date_in_api, url) -> Set[ForecastingDto]:
+def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Set[ForecastingDto]:
     refined_forecasting_set = set()
-    forecasting_list = _get_basic_forecasting_results(api_key, headers, url)
+    forecasting_generator = _get_forecasting_generator(api_key, headers, url)
     latest_date_text = latest_date_in_api.strftime('%Y%m%d')
 
-    for idx, item in enumerate(forecasting_list):  # TODO: 테스트 편리를 위해 enumerate로 idx 추가
-        # 메모리 한계 상 idx > 60 조건이 최대치임(6개월치 예찰정보 처리량)
-        if idx > 3:  # TODO: 테스트 편리를 위해 idx > x 조건 추가
-            break
+    # 테스트 편리를 위해 enumerate로 idx 추가
+    for idx, item in enumerate(forecasting_generator):
+        # 테스트 편리를 위해 idx > x 조건 추가 / 메모리 한계 상 idx > 60 조건이 최대치임(6개월치 예찰정보 처리량)
+        # if idx > 3:
+        #     break
 
-        # if latest_date_text != item.find('inputStdrDatetm').text: # TODO: 테스트 종료 후, 최신날짜의 예찰정보만 취급하도록 주석 제거
-        #     continue
+        if latest_date_text != item.find('inputStdrDatetm').text:
+            continue
 
-        forecasting_date, crop_code, detail_key = _get_forecasting_variables(item)
+        forecasting_date, crop_name, detail_key = _get_forecasting_variables(item)
         sido_forecasting_list = _get_sido_forecasting_results(api_key, detail_key, headers, url)
         pre_sido = "&^%"
         for item in sido_forecasting_list:
@@ -78,11 +68,11 @@ def _get_latest_forecasting(api_key, headers, latest_date_in_api, url) -> Set[Fo
                 if item.get("inqireValue") == "0":
                     continue
 
-                _append_instance_in_list(forecasting_date, refined_forecasting_set, crop_code, item, target)
+                _append_instance_in_list(forecasting_date, refined_forecasting_set, crop_name, item, target)
     return refined_forecasting_set
 
 
-def _get_date_of_latest_forecasting(forecasting_list):
+def _get_the_latest_forecasting_date(forecasting_list) -> Optional[date]:
     max_date = None
     for item in forecasting_list:
         date_in_text = item.find('inputStdrDatetm').text
@@ -95,24 +85,23 @@ def _get_date_of_latest_forecasting(forecasting_list):
     return max_date
 
 
-def _is_latest_data(date_in_api):
+def _is_latest_forecasting(date_in_api):
     # forecasting record 내 조사 날짜 컬럼 추가
     # 기존 DB 내 최신 forecasting 날짜와 api 호출에 따른 forecasting의 날짜를 비교해서 최선여부 확인할 것
     latest_forecasting = Forecasting.objects.latest("date")
     date_in_db = latest_forecasting.date
-
     return True if date_in_api > date_in_db else False
 
 
 def _get_forecasting_variables(item):
     forecasting_date = item.find('inputStdrDatetm').text
+    crop_name = item.find('kncrNm').text
     detail_key = item.find('insectKey').text
-    crop_code = item.find('kncrCode').text
 
-    return forecasting_date, crop_code, detail_key
+    return forecasting_date, crop_name, detail_key
 
 
-def _get_request_variables():
+def _get_request_vars():
     url = "http://ncpms.rda.go.kr/npmsAPI/service"
     headers = {"Content-Type": "application/xml"}
     api_key = os.environ.get("PUBLIC_API_KEY")
@@ -145,7 +134,7 @@ def _get_sigungu_forecasting_results(api_key, detail_key, headers, item, url):
     sigungu_response = requests.get(url=url, params=sigungu_path_params, headers=headers)
     sigungu_tree = elemTree.fromstring(sigungu_response.content)
     sigungu_text_list = sigungu_tree.find('list').text
-    sigungu_forecasting_list = convert_text_to_data_structure(sigungu_text_list)
+    sigungu_forecasting_list = convert_text_to_list(sigungu_text_list)
 
     return sigungu_forecasting_list
 
@@ -160,12 +149,12 @@ def _get_sido_forecasting_results(api_key, detail_key, headers, url):
     sido_response = requests.get(url=url, params=sido_path_params, headers=headers)
     sido_tree = elemTree.fromstring(sido_response.content)
     sido_text_list = sido_tree.find('list').text
-    sido_forecasting_list = convert_text_to_data_structure(sido_text_list)
+    sido_forecasting_list = convert_text_to_list(sido_text_list)
 
     return sido_forecasting_list
 
 
-def _get_basic_forecasting_results(api_key, headers, url):
+def _get_forecasting_generator(api_key, headers, url):
     path_params = {
         "apiKey": api_key,
         "serviceCode": "SVC51",
@@ -174,6 +163,6 @@ def _get_basic_forecasting_results(api_key, headers, url):
     }
     response = requests.get(url=url, params=path_params, headers=headers)
     tree = elemTree.fromstring(response.content)
-    forecasting_list = tree.iter(tag="item")
+    forecasting_generator = tree.iter(tag="item")
 
-    return forecasting_list
+    return forecasting_generator
