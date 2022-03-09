@@ -41,7 +41,7 @@ def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Se
         if latest_date_text != item.find('inputStdrDatetm').text:
             continue
 
-        forecasting_date, crop_code, detail_key = _get_forecasting_variables(item)
+        forecasting_date, crop_name, detail_key = _get_forecasting_variables(item)
         sido_forecasting_list = _get_sido_forecasting_results(api_key, detail_key, headers, url)
         pre_sido = "&^%"
         for item in sido_forecasting_list:
@@ -68,7 +68,7 @@ def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Se
                 if item.get("inqireValue") == "0":
                     continue
 
-                _append_instance_in_list(forecasting_date, refined_forecasting_set, crop_code, item, target)
+                _append_instance_in_list(forecasting_date, refined_forecasting_set, crop_name, item, target)
     return refined_forecasting_set
 
 
@@ -95,10 +95,10 @@ def _is_latest_forecasting(date_in_api):
 
 def _get_forecasting_variables(item):
     forecasting_date = item.find('inputStdrDatetm').text
+    crop_name = item.find('kncrNm').text
     detail_key = item.find('insectKey').text
-    crop_code = item.find('kncrNm').text
 
-    return forecasting_date, crop_code, detail_key
+    return forecasting_date, crop_name, detail_key
 
 
 def _get_request_vars():
