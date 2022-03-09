@@ -48,16 +48,19 @@ def send_alarms(farm_set: Set[AffectedFarmDto]):
     total_to_send = 0
     result = {}
     for farm in farm_set:
-        info = farm.info
-        message = f"{info.date}, {info.address_name}의 {info.crop_name}에서 {info.target_name} 피해 발생"
-
+        message = _make_alarm_message(farm.info)
         result = send_sms(to_number=farm.contact, content=message)
+
         if result['statusCode'] != "202":
             return result['statusName'], total_to_send
 
         total_to_send += 1
 
     return result['statusName'], total_to_send
+
+
+def _make_alarm_message(info):
+    return f"{info.date}, {info.address_name}의 {info.crop_name}에서 {info.target_name} 피해 발생"
 
 
 def send_sms(to_number, content):
