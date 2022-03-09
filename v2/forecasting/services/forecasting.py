@@ -1,23 +1,17 @@
 import os
-import time
 from typing import Set, Optional
 from datetime import datetime, date
-
-import base64
-import hashlib
-import hmac
 import requests
 import xml.etree.ElementTree as elemTree
-from django.db import transaction
 
-from .domains import ForecastingDto, AffectedFarmDto
-from .exceptions import DateNotFoundException, NotLatestException
-from .models import Forecasting, User, Farm, Crop, ProducingCrop
-from .utils import convert_text_to_data_structure
+from forecasting.domains import ForecastingDto, AffectedFarmDto
+from forecasting.exceptions import DateNotFoundException, NotLatestException
+from forecasting.models import Forecasting, User, Farm, Crop, ProducingCrop
+from forecasting.utils import convert_text_to_data_structure
 
 
 def collect_the_latest_forecasting() -> Set[ForecastingDto]:
-    api_key, headers, url = _get_request_variables()
+    api_key, headers, url = _get_request_vars()
     forecasting_generator = _get_forecasting_generator(api_key, headers, url)
     latest_date_from_source = _get_the_latest_forecasting_date(forecasting_generator)
 
@@ -30,108 +24,6 @@ def collect_the_latest_forecasting() -> Set[ForecastingDto]:
     latest_forecasting_set = _get_latest_forecasting_set(api_key, headers, latest_date_from_source, url)
 
     return latest_forecasting_set
-
-
-def find_affected_farms(forecasting_set: Set[ForecastingDto]) -> Set[AffectedFarmDto]:
-    affected_farm_set = set()
-    for owner in User.objects.filter(is_staff=False):
-        for farm in Farm.objects.filter(owner=owner):
-            for producing_crop in ProducingCrop.objects.filter(farm=farm):
-                for forecasting in forecasting_set:
-                    if _is_affected_farm(farm, forecasting, producing_crop):
-                        affected_farm_set.add(AffectedFarmDto(contact=owner.phone_number, info=forecasting))
-
-    return affected_farm_set
-
-
-def send_alarms(farm_set: Set[AffectedFarmDto]) -> (str, int):
-    total_to_send = 0
-    result = {}
-    for farm in farm_set:
-        message = _make_alarm_message(farm.info)
-        result = send_sms(to_number=farm.contact, content=message)
-
-        if result['statusCode'] != "202":
-            return result['statusName'], total_to_send
-
-        total_to_send += 1
-
-    return result['statusName'], total_to_send
-
-
-def _make_alarm_message(info):
-    return f"{info.date}, {info.address_name}의 {info.crop_name}에서 {info.target_name} 피해 발생"
-
-
-def send_sms(to_number, content):
-    access_key, secret_key = _get_key_vars()
-    base_url, from_number, service_id = _get_reqeust_params()
-    endpoint = f"/sms/v2/services/{service_id}/messages"
-    full_uri = base_url + endpoint
-    timestamp = str(int(time.time() * 1000))
-
-    body = _make_body(content, from_number, to_number)
-
-    signature = _make_signature(access_key, secret_key, 'POST', endpoint, timestamp)
-    header = _make_header(access_key, signature, timestamp)
-
-    res = requests.post(full_uri, json=body, headers=header)
-    return res.json()
-
-
-def _make_header(access_key, signature, timestamp):
-    return {
-        'Content-Type': 'application/json; charset=utf-8',
-        'x-ncp-apigw-timestamp': timestamp,
-        'x-ncp-iam-access-key': access_key,
-        'x-ncp-apigw-signature-v2': signature
-    }
-
-
-def _make_body(content, from_number, to_number):
-    return {
-        "type": "sms",
-        "from": from_number,
-        "content": content,
-        "messages": [
-            {
-                "to": to_number,
-                "subject": "병해충 예찰 서비스",
-                "content": content
-            }
-        ]
-    }
-
-
-def _get_reqeust_params():
-    base_url = os.environ.get("SENS_URL")
-    service_id = os.environ.get("SENS_SERVICE_ID")
-    from_number = os.environ.get("SENS_FROM_NUMBER")
-    return base_url, from_number, service_id
-
-
-def _get_key_vars():
-    access_key = os.environ.get("SENS_ACCESS_KEY")
-    secret_key = os.environ.get("SENS_SECRET_KEY")
-    return access_key, secret_key
-
-
-def _make_signature(access_key, secret_key, method, uri, timestamp):
-    secret_key = bytes(secret_key, 'UTF-8')
-
-    message = method + " " + uri + "\n" + timestamp + "\n" + access_key
-    message = bytes(message, 'UTF-8')
-    result = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
-    return result
-
-
-def _is_affected_farm(farm, forecasting, producing_crop):
-    address_in_farm = farm.address.name
-    address_in_forecasting = forecasting.address_name
-    crop_in_producing_crop = producing_crop.crop.name
-    crop_in_forecasting = forecasting.crop_name
-
-    return crop_in_producing_crop == crop_in_forecasting and address_in_farm == address_in_forecasting
 
 
 def _get_latest_forecasting_set(api_key, headers, latest_date_in_api, url) -> Set[ForecastingDto]:
@@ -208,7 +100,7 @@ def _get_forecasting_variables(item):
     return forecasting_date, crop_code, detail_key
 
 
-def _get_request_variables():
+def _get_request_vars():
     url = "http://ncpms.rda.go.kr/npmsAPI/service"
     headers = {"Content-Type": "application/xml"}
     api_key = os.environ.get("PUBLIC_API_KEY")

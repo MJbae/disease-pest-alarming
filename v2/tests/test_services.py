@@ -5,7 +5,9 @@ import pytest
 from model_bakery import baker
 
 from forecasting.domains import ForecastingDto, AffectedFarmDto
-from forecasting.services import collect_the_latest_forecasting, find_affected_farms, send_alarms
+from forecasting.services.forecasting import collect_the_latest_forecasting
+from forecasting.services.farm import find_affected_farms
+from forecasting.services.alarm import send_alarms
 
 pytestmark = [pytest.mark.django_db]
 
