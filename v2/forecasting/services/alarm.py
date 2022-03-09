@@ -12,17 +12,16 @@ from forecasting.dtos import ForecastingDto, AffectedFarmDto
 
 def send_alarms(farm_set: Set[AffectedFarmDto]) -> (str, int):
     total_to_send = 0
-    result = {}
     for farm in farm_set:
         message = _make_alarm_message(farm.info)
         result = _send_sms(to_number=farm.contact, content=message)
 
         if result['statusCode'] != "202":
-            return result['statusName'], total_to_send
+            return "fail", total_to_send
 
         total_to_send += 1
 
-    return result['statusName'], total_to_send
+    return "success", total_to_send
 
 
 def _make_alarm_message(info):
