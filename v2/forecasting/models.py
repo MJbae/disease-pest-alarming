@@ -69,7 +69,7 @@ class Farm(models.Model):
         User, related_name="farm_set", on_delete=models.CASCADE
     )
     address = models.ForeignKey(
-        Address, on_delete=models.SET_NULL, null=True, db_column='large_category_address_code'
+        Address, on_delete=models.SET_NULL, null=True, db_column='address_code'
     )
 
     def __str__(self):
