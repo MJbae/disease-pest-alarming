@@ -11,6 +11,16 @@ from forecasting.dtos import ForecastingDto, AffectedFarmDto
 
 
 def send_alarms(farm_set: Set[AffectedFarmDto]) -> (str, int):
+    """
+    Send sms alarm message to affected farm owners
+
+    Parameters:
+        farm_set(Set[AffectedFarmDto]): contains affected farm's info
+
+    Returns:
+        (str, int): result of sending sms, times to success in sending sms
+    """
+
     total_to_send = 0
     for farm in farm_set:
         message = _make_alarm_message(farm.info)
