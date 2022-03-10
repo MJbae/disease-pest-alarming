@@ -12,6 +12,16 @@ from forecasting.utils import convert_text_to_list
 
 
 def collect_the_latest_forecasting() -> Set[ForecastingDto]:
+    """
+    Collect the latest forecasting data from response of open api
+    if the data is latest comparing to data in DB
+
+    Parameters:
+
+    Returns:
+        latest_forecasting_set(Set[ForecastingDto]): the latest forecasting data from open api
+    """
+
     api_key, headers, url = _get_request_vars()
     forecasting_generator = _get_forecasting_generator(api_key, headers, url)
     latest_date_from_source = _get_the_latest_forecasting_date(forecasting_generator)
