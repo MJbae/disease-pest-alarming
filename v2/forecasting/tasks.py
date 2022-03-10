@@ -10,6 +10,9 @@ logger = logging.getLogger('celery')
 
 @shared_task
 def c_process_the_latest_forecasting():
+    """
+    Periodic celery task that process forecasting data and alarm to affected farmers
+    """
     forecasting_set = collect_the_latest_forecasting()
     if not forecasting_set:
         logger.info(msg=f'latest forecasting does not exists')
