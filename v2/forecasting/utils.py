@@ -1,12 +1,12 @@
-def convert_text_to_list(text: str) -> list[dict[str, str]]:
+def convert_text_to_list(text):
     """
     Convert text to python data structure
 
     Parameters:
-        text(str): text from OPEN API response
+        text(Optional[str]): text from OPEN API response
 
     Returns:
-        result(list[dict[str, str]]): list of dictionary elements
+        result(List[dict[str, str]]): list of dictionary elements
     """
 
     key_idx_start = 0
