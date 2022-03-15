@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  web:
+    image: gentlemj/forecasting:2.0
+    container_name: django
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:80
+    volumes:
+      - .:/code
+    ports:
+      - "80:80"
+    environment:
+      - DJANGO_ENV=prod
+      - DJANGO_SETTINGS_MODULE=config.settings.prod
+  consumer:
+    restart: always
+    image: gentlemj/forecasting:2.0
+    container_name: celery-worker
+    command: celery -A config worker -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - web
+    environment:
+      - LC_ALL=C.UTF-8
+      - LANG=C.UTF-8
+      - DJANGO_ENV=prod
+      - DJANGO_SETTINGS_MODULE=config.settings.prod
+  periodic_producer:
+    restart: always
+    image: gentlemj/forecasting:2.0
+    container_name: celery-beat
+    command: celery -A config beat -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - consumer
+    environment:
+      - LC_ALL=C.UTF-8
+      - LANG=C.UTF-8
+      - DJANGO_ENV=prod
+      - DJANGO_SETTINGS_MODULE=config.settings.prod
