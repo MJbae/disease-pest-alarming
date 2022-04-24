@@ -1,6 +1,6 @@
 ## Disease & Pest Alarm
 > Disease and Pest Forecasting Service based on SMS Alarm
-### How to use
+### How to work
 * Get SMS Alarm When it occurs
 
    * SMS Example
