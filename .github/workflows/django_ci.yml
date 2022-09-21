@@ -24,4 +24,4 @@ jobs:
     - name: Install Dependencies
       run: |
         apt-get update && apt-get install -y python3-pip libcurl4-openssl-dev libssl-dev default-libmysqlclient-dev build-essential && apt-get clean
-        pip3 install --upgrade --ignore-installed pip setuptools==45 && pip3 install -r requirements.txt
+        pip3 install --upgrade --ignore-installed pip setuptools==45 && pip3 install -r v2/requirements.txt
