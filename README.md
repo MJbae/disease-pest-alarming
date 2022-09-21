@@ -1,4 +1,4 @@
-## Disease & Pest Alarm
+## Disease & Pest Alarm [![Django CI](https://github.com/MJbae/disease-pest-alarming/actions/workflows/django_ci.yml/badge.svg)](https://github.com/MJbae/disease-pest-alarming/actions/workflows/django_ci.yml)
 > Disease and Pest Forecasting Service based on SMS Alarm
 ### How to work
 * Get SMS Alarm When it occurs
